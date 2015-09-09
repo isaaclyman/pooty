@@ -79,22 +79,31 @@ Here's your first app.
       this.model('welcome-message').poot(message);
       
       // Or this way, with a REST API and AJAX
+      /*
       this.url('/message').get().poot.model('welcome-message');
+      */
       
       // Or this way, with a REST API, AJAX and a failsafe
+      /*
       this.url('/message').get().success(function (message) {
         this.model('welcome-message').poot(message);
       }).failure(function (error) {
         this.model('welcome-message').poot('Something really bad has happened.', error);
       });
+      */
 
       // Or this way, with a WebSocket
+      /*
       this.url('/message-ws').websocket().poot.model('welcome-message');
+      */
 
       // Or this way, with the input on the page bound to the message
+      /*
       this.input('new-msg').poot.model('welcome-message');
+      */
       
       // Or this way, with a validated input
+      /*
       this.input('new-msg').validate(function (message) {
         if (message.length > 140) {
           this.model('welcome-message').poot('This message is too long.');
@@ -102,10 +111,13 @@ Here's your first app.
         }
         return true;
       }).poot.model('welcome-message');
+      */
       
       // And when you need to send a value somewhere...
+      /*
       var current = this.model('welcome-message').poot();
       this.url('/database').post(current);
+      */
     });
 
 If this isn't enough to get you started, documentation is forthcoming.
