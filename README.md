@@ -8,7 +8,7 @@ V = View. Stoic, reusable HTML and nothing else. Unpolluted with logic, curly br
 
 M = Model. A watchful Javascript object which mirrors your HTML structure (abbreviated somewhat) and tracks the parts of your page that may change for any reason.
 
-C = Controller. A peaceful blueprint that describes how to receive changes from the model or the server, enlighten them with logic, and send them in return to the model or the server.
+C = Controller. A blueprint that describes how to receive changes from the model or the server, enlighten them with logic, and send them in return to the model or the server.
 
 Pooty Time is built to be:
 
