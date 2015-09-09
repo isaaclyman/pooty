@@ -118,12 +118,42 @@ If you find the word "poot" offensive, you may use the following aliases in your
 
 `poot` > `deliver`
 
+`<poot>` > `<athlete>`
+
+`<poothtml>` > `<athletehtml>`
+
+`<pootcontainer>` > `<athletecontainer>`
+
+`<poottemplate>` > `<athletetemplate>`
+
 Then rename `pooty.js` to `athlete.js` and you're all set.
 
 The name "Athlete" is chosen in honor of my favorite band. I recommend listening to their *Live at Union Chapel* album on repeat while coding; it will make your code 46% more robust (probably).
 
 
-## A complete Pooty dictionary
+# A complete Pooty dictionary
+
+## HTML
+
+Pooty introduces a few new tags and an attribute.
+
+`<poot></poot>` is a tag which has no special qualities; as far as the browser is concerned, it is a `<span>`. Its only purpose is to indicate that the contents are determined by the model. The model interfaces easily with `<poot>` elements. Ideally, you should add a `class` attribute with a highly descriptive name for the `<poot>` so that you'll have an easy time selecting it later.
+
+It is generally a bad idea to put other elements inside of `<poot>` tags.
+
+`<poothtml></poothtml>` is a tag that allows you to inject arbitrary HTML into your page. You should add a `class` attribute to make it easy for the model to select. The *only* appropriate use for this is to format text. For example, you may on occasion need to add `<i>` or `<strong>` tags to messages visible on the page, which is fine. Do *not* use this for templating or for nested HTML structures. Instead, use `<poottemplate>`.
+
+`<pootcontainer></pootcontainer>` is a tag which is useful for displaying array-like information. If you have a list of identical objects somewhere in your model, and each one needs to be displayed in an identical HTML structure, use a `<poot-container>`. If you have a single object which needs to be displayed, use a `<poottemplate>`.
+
+Two attributes are important here: the `insert` attribute, which allows you to specify a template to display for each item in the array, and the `class` attribute, which the model will use to provide data.
+
+`<poottemplate></poottemplate>` is a tag which you can use to define *or* insert a template (a piece of reusable HTML).
+
+If you add a `name` attribute to this tag, it will be interpreted as a template *definition*. The name will identify it for use with the `insert` attribute on the `<pootcontainer>` or `<poottemplate>` tag.
+
+If you add an `insert` attribute to this tag, it will insert the specified template.
+
+## Javascript 
 
 ### Pooty (global)
 
