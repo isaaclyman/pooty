@@ -24,6 +24,7 @@ Pooty Time is built to be:
 Here's your first app.
 
 **index.html:**
+
     <html>
       <head>
         <!-- Put this at the head or tail of your document -->
@@ -44,6 +45,7 @@ Here's your first app.
     </html>
 
 **index.css:** (is your first app gonna be ugly? Heck no.)
+
     body {
       color: #444;
     }
@@ -57,12 +59,14 @@ Here's your first app.
     }
 
 **index.model.js:**
+
     Pooty.model({
       'welcome-message': '.welcome-msg',
       'new-msg': '.new-msg'
     });
 
 **index.control.js:**
+
     // Welcome Message controller
     Pooty.control(function () {
       // You can put a message on the page this way, with a simple string
