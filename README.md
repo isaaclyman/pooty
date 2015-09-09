@@ -31,7 +31,7 @@ Here's your first app.
       <head>
         <!-- Put this at the head or tail of your document -->
         <script type="text/javascript" src="pooty.js" />
-        <script type="text/javascript" src="index.model.js" />
+        <script type="text/javascript" src="welcomeMessage.model.js" />
         <script type="text/javascript" src="welcomeMessage.control.js" />
       </head>
       <body>
@@ -60,9 +60,10 @@ Here's your first app.
       text-align: center;
     }
 
-**index.model.js:**
+**welcomeMessage.model.js:**
 
-    Pooty.model({
+    // Welcome Message model
+    Pooty.model('Welcome Message')({
       'welcome-message': '.welcome-msg',
       'new-msg': '.new-msg'
     });
