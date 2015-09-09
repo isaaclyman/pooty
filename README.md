@@ -129,7 +129,9 @@ The name "Athlete" is chosen in honor of my favorite band. I recommend listening
 
 The global `Pooty` object, which you can use at any point after `pooty.js` has been loaded, has the following functions:
 
-`model`: A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. The CSS selector may refer to one or many page elements; Pooty will keep all of them up to date. You may nest these as necessary:
+
+#### `model`:
+A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. The CSS selector may refer to one or many page elements; Pooty will keep all of them up to date. You may nest these as necessary:
 
     {
       head: {
@@ -158,7 +160,8 @@ The `model()` function can be invoked one of two ways:
 
 - `model(string)(object)` will create a named model. You can create as many named models as you want, as long as they have different names. Attempting to create a model of the same name twice will overwrite the first one, so be careful.
 
-`control`: A home for your controller. The syntax is very similar to the `model` function:
+#### `control`:
+A home for your controller. The syntax is very similar to the `model` function:
 
 - `control(function)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `control()` function again, the first controller will be overwritten.
 
@@ -169,6 +172,8 @@ The `model()` function can be invoked one of two ways:
 Inside the controller is where the magic happens. The `this` keyword inside of a controller refers to an object that has the following properties and methods:
 
 `loadModel(string)`: Loads the model with the specified name and connects it to the current controller. Use this only once, and only if needed, at the very top of your controller.
+
+`useModel(string)`: Returns any auxiliary models you may want to use. You may store them in a variable and access them in the same way as your regular model.
 
 `model()` (no parameters): Returns the name of the current model, or `'universal'` if a universal model is being used.
 
