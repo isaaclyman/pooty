@@ -14,7 +14,7 @@ Pooty Time is built to be:
 
 - **Light**. It's a framework, not a buffet. Add on just the tools and services you need, instead of carrying around 30 kilobytes of stuff you'll never use.
 - **Surgical**. You know when things need to change. Instead of suffering through a massive dirty-check every time something happens, just tell Pooty Time when and how to act.
-- **Connected**. The model talks to the view, `input` elements talk to the model, the model talks to the dispatcher, and the dispatcher and the controller totally make out. It's a pretty good party.
+- **Connected**. `input` elements talk to the model, the model talks to the view, and the controller totally makes out with the model and the API. It's a pretty good party.
 - **Attractive**. I like cascading functions and so do you.
 - **Simple**. Learning to `poot()` is easier than falling over. And less painful.
 - **Satisfying**. Enough said.
