@@ -130,7 +130,7 @@ The name "Athlete" is chosen in honor of my favorite band. I recommend listening
 The global `Pooty` object, which you can use at any point after `pooty.js` has been loaded, has the following functions:
 
 
-#### `model`:
+#### `model()`:
 A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. The CSS selector may refer to one or many page elements; Pooty will keep all of them up to date. You may nest these as necessary:
 
     {
@@ -160,7 +160,7 @@ The `model()` function can be invoked one of two ways:
 
 - `model(string)(object)` will create a named model. You can create as many named models as you want, as long as they have different names. Attempting to create a model of the same name twice will overwrite the first one, so be careful.
 
-#### `control`:
+#### `control()`:
 A home for your controller. The syntax is very similar to the `model` function:
 
 - `control(function)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `control()` function again, the first controller will be overwritten.
