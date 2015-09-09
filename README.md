@@ -28,97 +28,105 @@ Here's your first app.
 
 **index.html:**
 
-    <html>
-      <head>
-        <!-- Put this at the head or tail of your document -->
-        <script type="text/javascript" src="zepto.min.js" />
-        <script type="text/javascript" src="pooty.js" />
-        <script type="text/javascript" src="welcomeMessage.model.js" />
-        <script type="text/javascript" src="welcomeMessage.control.js" />
-      </head>
-      <body>
-        <div class="nudge-down center">
-          <!-- A simple node with text we can update. -->
-          <poot class="welcome-msg"></poot>
-        </div>
-        <div class="nudge-down center">
-          <!-- An input we can bind to our model. -->
-          <input poot class="new-msg" type="text" placeholder="New Message"/>
-        </div>
-      </body>
-    </html>
+```html
+<html>
+  <head>
+    <!-- Put this at the head or tail of your document -->
+    <script type="text/javascript" src="zepto.min.js" />
+    <script type="text/javascript" src="pooty.js" />
+    <script type="text/javascript" src="welcomeMessage.model.js" />
+    <script type="text/javascript" src="welcomeMessage.control.js" />
+  </head>
+  <body>
+    <div class="nudge-down center">
+      <!-- A simple node with text we can update. -->
+      <poot class="welcome-msg"></poot>
+    </div>
+    <div class="nudge-down center">
+      <!-- An input we can bind to our model. -->
+      <input poot class="new-msg" type="text" placeholder="New Message"/>
+    </div>
+  </body>
+</html>
+```
 
 **index.css:** (is your first app gonna be ugly? Heck no.)
 
-    body {
-      color: #444;
-    }
-    
-    .nudge-down {
-      margin-top: 12px;
-    }
-    
-    .center {
-      text-align: center;
-    }
+```css
+body {
+  color: #444;
+}
+
+.nudge-down {
+  margin-top: 12px;
+}
+
+.center {
+  text-align: center;
+}
+```
 
 **welcomeMessage.model.js:**
 
-    // Welcome Message model
-    Pooty.model('Welcome Message')({
-      'welcome-message': '.welcome-msg',
-      'new-msg': '.new-msg'
-    });
+```javascript
+// Welcome Message model
+Pooty.model('Welcome Message')({
+  'welcome-message': '.welcome-msg',
+  'new-msg': '.new-msg'
+});
+```
 
 **welcomeMessage.control.js:**
 
-    // Welcome Message controller
-    Pooty.control('Welcome Message')(function () {
-      // You can put a message on the page this way, with a simple string
-      var message = 'Hellooooooo Tina!';
-      this.model('welcome-message').poot(message);
-      
-      // Or this way, with a REST API and AJAX
-      /*
-      this.url('/message').get().poot.model('welcome-message');
-      */
-      
-      // Or this way, with a REST API, AJAX and a failsafe
-      /*
-      this.url('/message').get().success(function (message) {
-        this.model('welcome-message').poot(message);
-      }).failure(function (error) {
-        this.model('welcome-message').poot('Something really bad has happened.', error);
-      });
-      */
+```javascript
+// Welcome Message controller
+Pooty.control('Welcome Message')(function () {
+  // You can put a message on the page this way, with a simple string
+  var message = 'Hellooooooo Tina!';
+  this.model('welcome-message').poot(message);
 
-      // Or this way, with a WebSocket
-      /*
-      this.url('/message-ws').websocket().poot.model('welcome-message');
-      */
+  // Or this way, with a REST API and AJAX
+  /*
+  this.url('/message').get().poot.model('welcome-message');
+  */
 
-      // Or this way, with the input on the page bound to the message
-      /*
-      this.input('new-msg').poot.model('welcome-message');
-      */
-      
-      // Or this way, with a validated input
-      /*
-      this.input('new-msg').validate(function (message) {
-        if (message.length > 140) {
-          this.model('welcome-message').poot('This message is too long.');
-          return false;
-        }
-        return true;
-      }).poot.model('welcome-message');
-      */
-      
-      // And when you need to send a value somewhere...
-      /*
-      var current = this.model('welcome-message').poot();
-      this.url('/database').post(current);
-      */
-    });
+  // Or this way, with a REST API, AJAX and a failsafe
+  /*
+  this.url('/message').get().success(function (message) {
+    this.model('welcome-message').poot(message);
+  }).failure(function (error) {
+    this.model('welcome-message').poot('Something really bad has happened.', error);
+  });
+  */
+
+  // Or this way, with a WebSocket
+  /*
+  this.url('/message-ws').websocket().poot.model('welcome-message');
+  */
+
+  // Or this way, with the input on the page bound to the message
+  /*
+  this.input('new-msg').poot.model('welcome-message');
+  */
+
+  // Or this way, with a validated input
+  /*
+  this.input('new-msg').validate(function (message) {
+    if (message.length > 140) {
+      this.model('welcome-message').poot('This message is too long.');
+      return false;
+    }
+    return true;
+  }).poot.model('welcome-message');
+  */
+
+  // And when you need to send a value somewhere...
+  /*
+  var current = this.model('welcome-message').poot();
+  this.url('/database').post(current);
+  */
+});
+```
 
 If this isn't enough to get you started, documentation is forthcoming.
 
@@ -175,6 +183,7 @@ The global `Pooty` object, which you can use at any point after `pooty.js` has b
 #### `model()`:
 A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. The CSS selector may refer to one or many page elements; Pooty will keep all of them up to date. You may nest these as necessary:
 
+```json
     {
       head: {
         title: 'span.title',
@@ -189,6 +198,7 @@ A home for your data model. The base `key: value` pair is modeled after `propert
         }
       }
     }
+```
 
 Google 'CSS Selectors' for a number of great tutorials on how to use these.
 
