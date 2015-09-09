@@ -3,7 +3,7 @@
 
 ## What is Pooty?
 
-Pooty is a dead simple VMC framework for Javascript.
+Pooty is a dead simple VMC framework for Javascript. It depends on Zepto, jQuery, or any other CSS selector engine which uses the `$` global and has a few simple jQuery-syntaxed DOM manipulation methods. For the best, most lightweight solution, use Zepto.
 
 The **sole purpose** of Pooty is to make it easy for you to describe interactions between your HTML, your Javascript and your API in a sensible, modular, extensible, readable, and somewhat impolite way.
 
@@ -18,6 +18,7 @@ Pooty is built to be:
 - **Light**. It's a framework, not a buffet. Add on just the tools and services you need, instead of carrying around 30 kilobytes of stuff you'll never use.
 - **Surgical**. You know when things need to change. Instead of suffering through a massive dirty-check every time something happens, just tell Pooty what to do and when to do it. It's driven by events, not by the system clock.
 - **Connected**. `input` elements talk to the model, the model talks to the view, and the controller totally makes out with the model and the API. It's a pretty good party.
+- **Functional**. Pooty encourages you to describe processes and connections instead of micro-managing your application state.
 - **Attractive**. I like cascading functions and so do you.
 - **Simple**. Learning to `poot()` is easier than falling over. And less painful.
 
@@ -30,6 +31,7 @@ Here's your first app.
     <html>
       <head>
         <!-- Put this at the head or tail of your document -->
+        <script type="text/javascript" src="zepto.min.js" />
         <script type="text/javascript" src="pooty.js" />
         <script type="text/javascript" src="welcomeMessage.model.js" />
         <script type="text/javascript" src="welcomeMessage.control.js" />
@@ -119,3 +121,103 @@ If you find the word "poot" offensive, you may use the following aliases in your
 Then rename `pooty.js` to `athlete.js` and you're all set.
 
 The name "Athlete" is chosen in honor of my favorite band. I recommend listening to their *Live at Union Chapel* album on repeat while coding; it will make your code 46% more robust (probably).
+
+
+## A complete Pooty dictionary
+
+### Pooty (global)
+
+The global `Pooty` object, which you can use at any point after `pooty.js` has been loaded, has the following functions:
+
+`model`: A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. The CSS selector may refer to one or many page elements; Pooty will keep all of them up to date. You may nest these as necessary:
+
+    {
+      head: {
+        title: 'span.title',
+        user: {
+          name: 'span.name',
+          age: 'span.age',
+          instruments: {
+            primary: 'div.instrument .primary',
+            secondary: 'div.instrument .secondary',
+            fullList: null
+          }
+        }
+      }
+    }
+
+Google 'CSS Selectors' for a number of great tutorials on how to use these.
+
+If an HTML tag is not specified (as in `.primary`), Pooty will look for either a `<poot>` tag or any tag with the `poot` attribute (e.g. `<span poot>`).
+
+Use the model, *not the controller*, to maintain state in your application. For any state information which should not be visible to the user, write `null` in place of a CSS selector. You will be able to change and access the value as normal but it will not attempt to update the view.
+
+The `model()` function can be invoked one of two ways:
+
+- `model(object)` will create One Model to Rule Them All (a "universal" model). This is fine for very simple apps, where only one model is needed. If you invoke the `model()` function again, the first model will be overwritten.
+
+- `model(string)(object)` will create a named model. You can create as many named models as you want, as long as they have different names. Attempting to create a model of the same name twice will overwrite the first one, so be careful.
+
+`control`: A home for your controller. The syntax is very similar to the `model` function:
+
+- `control(function)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `control()` function again, the first controller will be overwritten.
+
+- `control(string)(function)` will create a named controller. You can create as many named controllers as you want with different names. If you create a controller with the same name as an earlier one, the earlier one will be overwritten. If the controller has the same exact name as a model, *or* if you are using a universal model, the two will be connected automatically. Otherwise, you'll have to make the connection yourself (see the `loadModel()` function below).
+
+### Controller's lexical scope (`this`)
+
+Inside the controller is where the magic happens. The `this` keyword inside of a controller refers to an object that has the following properties and methods:
+
+`loadModel(string)`: Loads the model with the specified name and connects it to the current controller. Use this only once, and only if needed, at the very top of your controller.
+
+`model()` (no parameters): Returns the name of the current model, or `'universal'` if a universal model is being used.
+
+`model(string)`: Searches the current model for the property with the specified name and returns a `model` object, which refers to an HTML tag *for displaying information*, usually a `<poot>` or `<span>` tag. This is rarely useful on its own, and generally begins a series of cascading functions. See below for available methods.
+
+`input(string)`: Searches the current model for the property with the specified name and returns an `input` object, which refers to an `<input>` tag. Like the `model` object, this is rarely useful on its own. See below for available methods.
+
+`button(string)`: Searches the current model for the property with the specified name and returns a `button` object, which refers to a `<button>` tag (or any other element which may be clicked by the user). Again, this is not very useful on its own. See below for available methods.
+
+`url(string)`: Returns a `url` object which can be used for REST methods or websockets. See below for available methods.
+
+
+### The `model` object
+
+The `model` object refers to HTML elements which are informative (i.e. not interactive) or to state variables. It is obtained by calling `this.model(string)` with a property name from the model, and has the following methods:
+
+`poot()` (no parameters): Returns the current value of this property.
+
+`poot(string [, string2,...stringN])`: Replaces the property's value with the arguments passed in. All the arguments will be joined into a single string, each separated by a single space.
+
+
+### The `input` object
+
+The `input` object refers to HTML `<input>` elements which accept user input. It is obtained by calling `this.input(string)` with a property name from the model, and has the following properties and methods:
+
+`poot`: A property which can be used to bind all user input to another part of the model.
+
+`poot.model(string)`: The most common implementation of the `poot` property. Makes a permanent binding which will replicate everything typed into the `input` element on another property of the model. Returns a binding object, which has an `off()` method that will destroy the binding.
+
+`validate(function)`: Takes a function, to which is passed all user input. If the function returns a falsy value, no further chained functions will be evaluated.
+
+To get the value of the model property (instead of binding it to another property), use the `model.poot()` method instead. 
+
+
+### The `button` object
+
+The `button` object refers to any clickable HTML element (most commonly `<button>`). It is obtained by calling `this.button(string)` with a property name from the model, and has the following methods:
+
+`click(function)`: A property which can be used to bind click events to a function which runs on every click. Inside the function, you may call `this.off()` to destroy the binding.
+
+`doubleclick(function)`: Identical to `click(function)`, except that it registers double clicks instead of single clicks.
+
+
+### The `url` object
+
+The `url` object refers to a static URL string, which can be used for REST methods and websockets. It is obtained by calling `this.url(string)` with an absolute or relative URL. It has the following methods:
+
+`get()`
+
+`post()`
+
+`put()`
