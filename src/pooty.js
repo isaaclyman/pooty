@@ -29,12 +29,9 @@ window = window || {};
     //  OR
     //@param modelname: A universal model
     Pooty.model = function (modelname) {
+        Pooty.utility.check(modelname, ['string', 'object'], 'Pooty.model()') || return;
         if (typeof modelname === 'string') {
             return function (model) {
-                if (!model || typeof model !== 'object') {
-                    return Pooty.error('Incorrect parameters', 'Called model()(object) with incorrect parameters:', model);
-                }
-                
                 Pooty.models = Pooty.models || {};
                 Pooty.models[modelname] = model;
                 
@@ -46,8 +43,6 @@ window = window || {};
         } else if (typeof modelname === 'object') {
             Pooty.models = Pooty.models || {};
             Pooty.models.universal = modelname;
-        } else {
-            Pooty.error('Incorrect parameters', 'Called model(string || object) with incorrect parameters:', modelname);
         }
     };
     
@@ -57,34 +52,32 @@ window = window || {};
     //  OR
     //@param controlname: A universal controller function
     Pooty.control = function (controllername) {
+        Pooty.utility.check(controllername, ['string', 'function'], 'Pooty.control()') || return;
         if (typeof controllername === 'string') {
             return function (controllerFn) {
-                if (!controllerFn || typeof controllerFn !== 'function') {
-                    return Pooty.error('Incorrect parameters', 'Called control()(function) with incorrect parameters:', controllerFn);
-                }
-                
                 Pooty.controllers = Pooty.controllers || {};
                 Pooty.controllers[controllername] = controllerFn;
             }
         } else if (typeof controllername === 'function') {
             Pooty.controllers = Pooty.controllers || {};
             Pooty.controllers.universal = controllername;
-        } else {
-            Pooty.error('Incorrect parameters', 'Called control(string || function) with incorrect parameters:', controllername);
         }
     };
     
     Pooty.resource = {
         controllerScope: function (mainModel) {
-            return {
+            var scope = this;
+            scope.functions = {
                 loadModel: function (name) {
+                    Pooty.utility.check(name, ['string'], 'this.loadModel()') || return;
                     var newModel = Pooty.models[name];
                     if (!newModel) {
                         return Pooty.error('No model found', 'Could not find a model with the name:', name);
                     }
-                    mainModel = newModel;
+                    scope.mainModel = newModel;
                 },
                 useModel: function (name) {
+                    Pooty.utility.check(name, ['string'], 'this.useModel()') || return;
                     var newModel = Pooty.models[name];
                     if (!newModel) {
                         return Pooty.error('No model found', 'Could not find a model with the name:', name);
@@ -92,11 +85,8 @@ window = window || {};
                     return Pooty.resource.controllerScope(newModel).model;
                 },
                 model: function (property) {
-                    if (!property || typeof property !== 'string') {
-                        return Pooty.error('Incorrect parameters', 'Called model(string) with incorrect parameters:', property);
-                    }
-
-                    var selector = Pooty.utility.getModelValue(model, property);
+                    Pooty.utility.check(property, ['string'], 'this.model()') || return;
+                    var selector = Pooty.utility.getModelValue(scope.mainModel, property);
                     
                     return {
                         poot: function () {
@@ -111,15 +101,107 @@ window = window || {};
                     }
                 },
                 input: function (property) {
+                    Pooty.utility.check(property, ['string'], 'this.input()') || return;
+                    var selector = Pooty.utility.getModelValue(scope.mainModel, property);
                     
+                    return {
+                        poot: {
+                            model: function (targetProperty) {
+                                Pooty.utility.check(targetProperty, ['string'], 'this.input().poot.model()') || return;
+                                var targetSelector = Pooty.utility.getModelValue(scope.mainModel, targetProperty);
+                                var handler = function () {
+                                    scope.functions.model(selector).poot($(selector).val());
+                                };
+                                $(selector).on('keyup', null, handler);
+                                
+                                return {
+                                    off: function () {
+                                        $(selector).off('keyup', null, handler);
+                                    }
+                                }
+                            }
+                        },
+                        validate: function validate(validFn) {
+                            var validated = false;
+                            var handler = function () {
+                                if (!!validFn($(selector).val())) {
+                                    validated = true;
+                                } else {
+                                    validated = false;
+                                }
+                            };
+                            
+                            $(selector).on('keyup', null, handler);
+                            
+                            var off = function () {
+                                $(selector).off('keyup', null, handler);
+                            };
+                            
+                            return {
+                                off: off,
+                                success: function (successFn) {
+                                    validated ? successFn($(selector).val()) : null;
+                                    return {
+                                        off: off
+                                    }
+                                }
+                            }
+                        }
+                    };
                 },
                 button: function (property) {
-                
+                    Pooty.utility.check(property, ['string'], 'this.button()') || return;
+                    var selector = Pooty.utility.getModelValue(scope.mainModel, property);
+                    
+                    var bind = function (handler, type) {
+                        var off = {};
+                        handler = handler.bind(off);
+                        off.off = function () {
+                            $(selector).off(type, null, handler);
+                        };
+
+                        $(selector).on(type, null, handler);
+                    };
+                    
+                    return {
+                        click: function (handler) {
+                            bind(handler, 'click');
+                        },
+                        doubleclick: function (handler) {
+                            bind(handler, 'dblclick');
+                        }
+                    };
                 },
                 url: function (url) {
-                
+                    Pooty.utility.check(url, ['string'], 'this.url()') || return;
+                    var urlObj = this;
+                    
+                    this.params = null;
+                    this.headers = null;
+                    this.body = null;
+                    
+                    return {
+                        params: function (paramsObj) {
+                            urlObj.params = paramsObj;
+                        },
+                        headers: function (headersObj) {
+                            urlObj.headers = headersObj;
+                        },
+                        body: function (bodyObj) {
+                            urlObj.body = bodyObj;
+                        },
+                        get: function () {
+
+                        },
+                        post: function () {},
+                        put: function () {},
+                        delete: function () {},
+                        http: function (method) {},
+                    };
                 }
             };
+            
+            return scope.functions;
         }
     };
     
@@ -155,6 +237,17 @@ window = window || {};
         
         setViewValue: function (selector, value) {
             $(selector).text(value);
+        },
+        
+        // Checks an argument's type
+        check: function (argument, types, fnName) {
+            if (!~types.indexOf(typeof argument) || argument === null) {
+                Pooty.error('Incorrect parameter',
+                            fnName + ' expected an argument of type ' + types.join('||') + ', but instead received:',
+                            argument);
+                return false;
+            }
+            return true;
         }
     };
     

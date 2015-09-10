@@ -261,7 +261,7 @@ The `input` object refers to HTML `<input>` elements which accept user input. It
 
 `poot.model(string)`: The most common implementation of the `poot` property. Makes a permanent binding which will replicate everything typed into the `input` element on another property of the model. Returns a binding object, which has an `off()` method that will destroy the binding.
 
-`validate(function)`: Takes a function, to which is passed all user input. You can chain a `success(function)` method to this, which will run if your validation function returns a truthy value, or will be skipped if it returns a falsy value.
+`validate(function)`: Takes a function, to which is passed all user input. You can chain a `success(function)` method to this, which will run if your validation function returns a truthy value, or will be skipped if it returns a falsy value. The function passed to `success()` will be called with the user input value. Both `validate()` and `success()` return a binding object, which has an `off()` method that will destroy the binding.
 
 To get the value of the model property (instead of binding it to another property), use the `model.poot()` method instead. 
 
