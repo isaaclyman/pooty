@@ -3,7 +3,7 @@
 
 ## What is Pooty?
 
-Pooty is a dead simple VMC framework for Javascript. It depends on Zepto, jQuery, or any other CSS selector engine which uses the `$` global and has a few simple jQuery-syntaxed DOM manipulation methods. For the best, most lightweight solution, use Zepto.
+Pooty is a dead simple VMC framework for Javascript. It depends on Zepto or jQuery, and may work (but is not tested with) other CSS selector engines that use the `$` global and have a few simple jQuery-syntaxed DOM manipulation methods. For most lightweight solution, use Zepto.
 
 The **sole purpose** of Pooty is to make it easy for you to describe interactions between your HTML, your Javascript and your API in a sensible, modular, extensible, readable, and somewhat impolite way.
 
@@ -139,6 +139,8 @@ If you find the word "poot" offensive, you may use the following aliases in your
 `poot` > `yield`
 
 `<poot>` > `<athlete>`
+
+`poot` (HTML attribute) > `athlete`
 
 `<poothtml>` > `<athletehtml>`
 
