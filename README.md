@@ -117,7 +117,9 @@ Pooty.control('Welcome Message')(function () {
       return false;
     }
     return true;
-  }).poot.model('welcome-message');
+  }).success(function (message) {
+    this.model('welcome-message').poot(message);
+  });
   */
 
   // And when you need to send a value somewhere...
@@ -183,7 +185,7 @@ The global `Pooty` object, which you can use at any point after `pooty.js` has b
 
 
 #### `model()`:
-A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. The CSS selector may refer to one or many page elements; Pooty will keep all of them up to date. You may nest these as necessary:
+A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. Property names may not contain spaces; use a dash instead. CSS selectors may refer to one or many page elements, and Pooty will keep all of them up to date. You may nest these as necessary:
 
 ```javascript
 {
@@ -201,6 +203,8 @@ A home for your data model. The base `key: value` pair is modeled after `propert
   }
 }
 ```
+
+Nested elements are accessed like this: `this.model('user.instruments.primary')`.
 
 Google 'CSS Selectors' for a number of great tutorials on how to use these.
 
@@ -257,7 +261,7 @@ The `input` object refers to HTML `<input>` elements which accept user input. It
 
 `poot.model(string)`: The most common implementation of the `poot` property. Makes a permanent binding which will replicate everything typed into the `input` element on another property of the model. Returns a binding object, which has an `off()` method that will destroy the binding.
 
-`validate(function)`: Takes a function, to which is passed all user input. If the function returns a falsy value, no further chained functions will be evaluated.
+`validate(function)`: Takes a function, to which is passed all user input. You can chain a `success(function)` method to this, which will run if your validation function returns a truthy value, or will be skipped if it returns a falsy value.
 
 To get the value of the model property (instead of binding it to another property), use the `model.poot()` method instead. 
 
