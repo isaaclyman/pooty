@@ -161,9 +161,11 @@ The name "Athlete" is chosen in honor of my favorite band. I recommend listening
 
 Pooty introduces a few new tags and an attribute.
 
-`<poot></poot>` is a tag which has no special qualities; as far as the browser is concerned, it is a `<span>`. Its only purpose is to indicate that the contents are determined by the model. The model interfaces easily with `<poot>` elements. Ideally, you should add a `class` attribute with a highly descriptive name for the `<poot>` so that you'll have an easy time selecting it later.
+`<poot></poot>` is a tag which has no special qualities; as far as the browser is concerned, it is a `<span>`. Its only purpose is to indicate that the contents are determined by the model. Ideally, you should add a `class` attribute with a highly descriptive name for the `<poot>` so that you'll have an easy time selecting it later.
 
 It is generally a bad idea to put other elements inside of `<poot>` tags.
+
+As an alternative to the `<poot>` tag, you may add the `poot` attribute to any HTML tag to provide the same semantic meaning.
 
 `<poothtml></poothtml>` is a tag that allows you to inject arbitrary HTML into your page. You should add a `class` attribute to make it easy for the model to select. The *only* appropriate use for this is to format text. For example, you may on occasion need to add `<i>` or `<strong>` tags to messages visible on the page, which is fine. Do *not* use this for templating or for nested HTML structures. Instead, use `<poottemplate>`.
 
@@ -190,13 +192,13 @@ A home for your data model. The base `key: value` pair is modeled after `propert
 ```javascript
 {
   head: {
-    title: 'span.title',
+    title: 'span[poot].title',
     user: {
-      name: 'span.name',
-      age: 'span.age',
+      name: 'poot.name',
+      age: 'poot.age',
       instruments: {
-        primary: 'div.instrument .primary',
-        secondary: 'div.instrument .secondary',
+        primary: 'div.instrument poot.primary',
+        secondary: 'div.instrument poot.secondary',
         fullList: null
       }
     }
@@ -206,9 +208,7 @@ A home for your data model. The base `key: value` pair is modeled after `propert
 
 Nested elements are accessed like this: `this.model('user.instruments.primary')`.
 
-Google 'CSS Selectors' for a number of great tutorials on how to use these.
-
-If an HTML tag is not specified (as in `.primary`), Pooty will look for either a `<poot>` tag or any tag with the `poot` attribute (e.g. `<span poot>`).
+Google 'CSS Selectors' for a number of great tutorials on how to use these. They are plugged directly into jQuery or Zepto to find the element you want, so you can use any selectors your chosen library supports.
 
 Use the model, *not the controller*, to maintain state in your application. For any state information which should not be visible to the user, write `null` in place of a CSS selector. You will be able to change and access the value as normal but it will not attempt to update the view.
 
@@ -246,7 +246,7 @@ Inside the controller is where the magic happens. The `this` keyword inside of a
 
 ### The `model` object
 
-The `model` object refers to HTML elements which are informative (i.e. not interactive) or to state variables. It is obtained by calling `this.model(string)` with a property name from the model, and has the following methods:
+The `model` object refers to HTML elements which are informative (i.e. interactivity is irrelevant for the current operation) or to state variables. It is obtained by calling `this.model(string)` with a property name from the model, and has the following methods:
 
 `poot()` (no parameters): Returns the current value of this property.
 

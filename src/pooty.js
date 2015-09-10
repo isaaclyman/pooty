@@ -1,7 +1,7 @@
 // Establish the presence of a window
 window = window || {};
 
-(function () {
+(function (window, $) {
     // Create Pooty as a global which executes the report() function
     //  (useful as we create the default functionality later)
     var Pooty = window.Pooty = window.Athlete = function () {
@@ -36,10 +36,12 @@ window = window || {};
                 }
                 
                 Pooty.models = Pooty.models || {};
-                Pooty.models[modelname] = Pooty.utility.flattenModel(model);
+                Pooty.models[modelname] = model;
                 
                 Pooty.state = Pooty.state || {};
-                Pooty.state[modelname] = Pooty.utility.clean(model);
+                var newState = {};
+                $.extend(true, newState, model);
+                Pooty.state[modelname] = Pooty.utility.clean(newState);
             };
         } else if (typeof modelname === 'object') {
             Pooty.models = Pooty.models || {};
@@ -102,6 +104,9 @@ window = window || {};
                                 return Pooty.utility.getViewValue(selector);
                             }
                             Pooty.utility.setViewValue(selector, Array.prototype.join.call(arguments, ' '));
+                        },
+                        yield: function () {
+                            return this.poot.apply(this, arguments);
                         }
                     }
                 },
@@ -126,14 +131,10 @@ window = window || {};
                 if (!model.hasOwnProperty(key)) continue;
                 if (Array.isArray(model[key])) {
                     model[key] = [];
-                    continue;
-                }
-                switch (typeof model[key]) {
-                    case 'object':
-                        clean(model[key]);
-                        break;
-                    default:
-                        model[key] = null;
+                } else if (typeof model[key] === 'object') {
+                    clean(model[key]);
+                } else {
+                    model[key] = null;
                 }
             }
         },
@@ -177,4 +178,4 @@ window = window || {};
         }
     });
 
-})();
+})(window, $);
