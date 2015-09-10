@@ -92,7 +92,7 @@ Pooty.control('Welcome Message')(function () {
 
   // Or this way, with a REST API, AJAX and a failsafe
   /*
-  this.url('/message').get().success(function (message) {
+  this.url('/message').get().poot().success(function (message) {
     this.model('welcome-message').poot(message);
   }).failure(function (error) {
     this.model('welcome-message').poot('Something really bad has happened.', error);
@@ -109,7 +109,7 @@ Pooty.control('Welcome Message')(function () {
   this.input('new-msg').poot.model('welcome-message');
   */
 
-  // Or this way, with a validated input
+  // Or this way, with a validated input bound to the message
   /*
   this.input('new-msg').validate(function (message) {
     if (message.length > 140) {
