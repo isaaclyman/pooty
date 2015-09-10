@@ -128,7 +128,7 @@ Pooty.control('Welcome Message')(function () {
 });
 ```
 
-If this isn't enough to get you started, documentation is forthcoming.
+Since this is a v0.0 code base, expect everything in this documentation to change at any moment.
 
 ## "Athlete" alias
 
@@ -273,8 +273,19 @@ The `button` object refers to any clickable HTML element (most commonly `<button
 
 The `url` object refers to a static URL string, which can be used for REST methods and websockets. It is obtained by calling `this.url(string)` with an absolute or relative URL. It has the following methods:
 
-`get()`
+`params(object)`: Sets the query parameters for the `url` object, then returns the `url` object for further operations.
 
-`post()`
+`headers(object)`: Sets the request headers for the `url` object, then returns the `url` object for further operations.
 
-`put()`
+`body(object)`: Sets the request body for the `url` object, then returns the `url` object for further operations.
+
+`get()`: Performs a GET request against the URL, using any configuration provided. You can `poot` this to the model (`poot.model(string)`) directly, or just `poot()` it to return a Promise object which will resolve with the response from the API.
+
+`post()`: Performs a POST request against the URL. See `get()`.
+
+`put()`: Performs a PUT request against the URL. See `get()`.
+
+`delete()`: Performs a DELETE request against the URL. See `get()`.
+
+`http(string)`: Performs a miscellaneous request named by the parameter (e.g. `'UPDATE'`, `'JSONP'` or `'OPTIONS'`). See `get()`.
+
