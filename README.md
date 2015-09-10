@@ -183,7 +183,7 @@ The global `Pooty` object, which you can use at any point after `pooty.js` has b
 #### `model()`:
 A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. The CSS selector may refer to one or many page elements; Pooty will keep all of them up to date. You may nest these as necessary:
 
-```json
+```javascript
 {
   head: {
     title: 'span.title',
