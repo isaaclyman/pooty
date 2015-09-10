@@ -136,7 +136,7 @@ If you find the word "poot" offensive, you may use the following aliases in your
 
 `Pooty` > `Athlete` (both of these are globals)
 
-`poot` > `deliver`
+`poot` > `yield`
 
 `<poot>` > `<athlete>`
 
