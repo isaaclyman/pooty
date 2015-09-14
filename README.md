@@ -71,8 +71,8 @@ body {
 ```javascript
 // Welcome Message model
 Pooty.model('Welcome Message')({
-  'welcome-message': '.welcome-msg',
-  'new-msg': '.new-msg'
+  'welcome-message': 'poot.welcome-msg',
+  'new-msg': 'input[poot].new-msg'
 });
 ```
 
@@ -165,9 +165,9 @@ Pooty introduces a few new tags and an attribute.
 
 It is generally a bad idea to put other elements inside of `<poot>` tags.
 
-As an alternative to the `<poot>` tag, you may add the `poot` attribute to any HTML tag to provide the same semantic meaning.
+As an alternative to the `<poot>` tag, you may add the `poot` attribute to any HTML tag to provide the same semantic meaning. Both the `<poot>` tag and the `poot` attribute are completely optional.
 
-`<poothtml></poothtml>` is a tag that allows you to inject arbitrary HTML into your page. You should add a `class` attribute to make it easy for the model to select. The *only* appropriate use for this is to format text. For example, you may on occasion need to add `<i>` or `<strong>` tags to messages visible on the page, which is fine. Do *not* use this for templating or for nested HTML structures. Instead, use `<poottemplate>`.
+`<poothtml></poothtml>` is a tag that allows you to inject arbitrary HTML into your page. You should add a `class` attribute to make it easy for the model to select. The *only* appropriate use for this is to format text. For example, you may on occasion need to add `<i>` or `<strong>` tags to messages visible on the page, which is fine. Do *not* use this for templating or for nested HTML structures. Instead, use `<template>`.
 
 `<bucket></bucket>` is a tag which is useful for displaying array-like information. If you have a list of identical objects somewhere in your model, and each one needs to be displayed in an identical HTML structure, use a `<bucket>`. If you have a single object which needs to be displayed, use a `<template>`.
 
@@ -325,6 +325,8 @@ The `websocket` object refers to an open websocket connection, which can be used
 
 
 # Other functions you may use
+
+`Pooty(string ModelName)`: This is useful in the browser console. It will log a full model object to the console, giving a snapshot of application state.
 
 `Pooty.utility.check(var, [string], string)`: Accepts a variable, an array of `typeof` strings, and a function signature as a string. Asserts that the variable type matches at least one of the `typeof` strings, and throws an error if it doesn't. Uses the function signature as part of the error message. Use this to implement type safety in your app.
 

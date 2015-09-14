@@ -4,8 +4,8 @@ window = window || {};
 (function (window, $, JSON) {
     // Create Pooty as a global which executes the report() function
     //  (useful as we create the default functionality later)
-    var Pooty = window.Pooty = window.Athlete = function () {
-        return Pooty.report ? Pooty.report() : null;
+    var Pooty = window.Pooty = window.Athlete = function (modelname) {
+        return Pooty.state[modelname];
     };
     
     // Error reporter
@@ -218,17 +218,40 @@ window = window || {};
                                                [url, protocol]);
                         var socket = new window.WebSocket(url, protocol);
                         
-                        this.sendqueue = [];
-                        
+                        var sendqueue = [];
+
                         var send = function (data) {
                             if (typeof data === 'object') {
                                 data = JSON.stringify(data);
                             }
-                            sendqueue.push(data);
+                            if (socket.readyState === socket.CONNECTING) {
+                                sendqueue.push(data);
+                            } else if (socket.readyState === socket.OPEN) {
+                                socket.send(data);
+                            } else {
+                                Pooty.error('WS connection failed', 'The websocket connection to ' + url + ' failed to connect.',
+                                            [protocol, data]);
+                            }
                         };
                         
                         var receive = function (handlerFn) {
+                            socket.onmessage = function (message) {
+                                handlerFn(message.data);
+                            };
+                        };
                         
+                        socket.onopen = function () {
+                            if (sendqueue.length > 0) {
+                                for (var msg in sendqueue) {
+                                    socket.send(sendqueue[msg]);
+                                }
+                            }
+                        };
+                        
+                        return {
+                            send: send,
+                            receive: receive,
+                            close: socket.close
                         };
                     };
                     
@@ -327,7 +350,7 @@ window = window || {};
 
         head.appendChild(style);
     };
-    
+
     $(function () {
         // Run all controllers when page is loaded
         for (var controller in Pooty.controllers) {
