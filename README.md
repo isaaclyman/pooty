@@ -242,7 +242,7 @@ Inside the controller is where the magic happens. The `this` keyword inside of a
 `useModel(string ModelName)`: Returns any auxiliary model you may want to use. You may store it in a variable and access it in the same way as your regular model, like so:
 
 ```javascript
-var otherModel = this.useModel('otherModel`);
+var otherModel = this.useModel('otherModel');
 otherModel('model-property').poot('A new value');
 ```
 
