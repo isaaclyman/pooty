@@ -365,8 +365,8 @@ window = window || {};
         
         // Define styles for Pooty elements
         Pooty.utility.css('poot, athlete { display: inline-block; }' + 
-                          'poothtml, athletehtml, pootcontainer, athletecontainer, ' +
-                          'poottemplate, athletetemplate { display: block; }');
+                          'poothtml, athletehtml, bucket, ' +
+                          'template { display: block; }');
     });
 
 })(window, window.$, window.JSON);

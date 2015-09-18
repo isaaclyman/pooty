@@ -175,7 +175,7 @@ Two attributes are important here: the `insert` attribute, which allows you to s
 
 `<template></template>` is a tag which you can use to define *or* insert a template (a piece of reusable HTML).
 
-If you add a `name` attribute to this tag, it will be interpreted as a template *definition*. The name will identify it for use with the `insert` attribute on a `<pootcontainer>` tag or a different `<poottemplate>` tag.
+If you add a `name` attribute to this tag, it will be interpreted as a template *definition*. The name will identify it for use with the `insert` attribute on a `<bucket>` tag or a different `<template>` tag.
 
 If you add an `insert` attribute to this tag, it will insert the specified template.
 
@@ -216,7 +216,7 @@ Nested elements are accessed like this: `this.model('user.instruments.primary')`
 
 Google 'CSS Selectors' for a number of great tutorials on how to use these. They are plugged directly into jQuery or Zepto to find the element you want, so you can use any selectors your chosen library supports.
 
-For arrays of data, add an array *with a single element* (an object), which will represent the model for each element in the array. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<pootcontainer>` HTML element on the page should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
+For arrays of data, add an array *with a single element* (an object), which will represent the model for each element in the array. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<bucket>` HTML element on the page should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
 
 Use the model, *not the controller*, to maintain state in your application. For any state information which should not be visible to the user, write `null` in place of a CSS selector. You will be able to change and access the value as normal but it will not attempt to update the view.
 
