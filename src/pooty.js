@@ -91,7 +91,7 @@ window = window || {};
     Pooty.template = function () {
         var urls = Array.prototype.slice.call(arguments);
         urls.forEach(function (url) {
-            $.ajax(url, 
+            Pooty.templates.push($.get(url));
         });
     };
     
