@@ -259,7 +259,7 @@ window = window || {};
                             } else if (socket.readyState === socket.OPEN) {
                                 socket.send(data);
                             } else {
-                                Pooty.error('WS connection failed', 'The websocket connection to ' + url + ' failed to connect.',
+                                Pooty.error('Connection failed', 'The websocket connection to ' + url + ' failed to connect.',
                                             [protocol, data]);
                             }
                         };
