@@ -31,10 +31,13 @@ window = window || {};
     // Models: A home for the user-created models, with name:selector pairs
     // Controllers: A home for the user-created controllers
     // State: A home for the application state
+    // Fns: A home for user-defined shared functions and services
+    // Templates: A home for user-defined templates
     Pooty.models = Pooty.models || {};
     Pooty.controllers = Pooty.controllers || {};
     Pooty.state = Pooty.state || {};
     Pooty.fns = Pooty.fns || {};
+    Pooty.templates = Pooty.templates || {};
     
     // Function for data model creation
     //@param modelname: A name for the model
@@ -81,6 +84,15 @@ window = window || {};
             if (!Pooty.utility.check(sharedfn, ['function'], 'Pooty.fn()')) return;
             Pooty.fns[fnname] = sharedfn;
         };
+    };
+    
+    // Function to fetch external HTML templates
+    //@param url: The location of the template
+    Pooty.template = function () {
+        var urls = Array.prototype.slice.call(arguments);
+        urls.forEach(function (url) {
+            $.ajax(url, 
+        });
     };
     
     Pooty.resource = {
@@ -215,6 +227,7 @@ window = window || {};
                     
                     var ajax = function (type) {
                         if (!Pooty.utility.check(type, ['string'], 'urlObj.http()')) return;
+                        urlObj.type = type || urlObj.type;
                         var response = $.ajax(urlObj);
                         var poot = function () {
                             return response;
@@ -281,6 +294,7 @@ window = window || {};
                     this.get = ajax.bind(this, 'get');
                     this.post = ajax.bind(this, 'post');
                     this.put = ajax.bind(this, 'put');
+                    this.patch = ajax.bind(this, 'patch');
                     this.delete = ajax.bind(this, 'delete');
                     this.http = ajax.bind(this);
                     

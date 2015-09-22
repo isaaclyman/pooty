@@ -187,6 +187,11 @@ If you add an `insert` attribute to this tag, it will insert the specified templ
 
 The global `Pooty` object, which you can use at any point after `pooty.js` has been loaded, has the following functions:
 
+#### `template()`:
+
+A function to load any external HTML templates. Use it like this:
+
+`Pooty.template(string RelativeUrl1 [, string RelativeUrl2...string RelativeUrlN])`, where each RelativeUrl is the relative location of an HTML file containing one or more `<template>` definitions. This function accepts an unlimited number of arguments, and will attempt to parse each one for templates.
 
 #### `model()`:
 A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. Property names may not contain spaces; use a dash instead. CSS selectors may refer to one or many page elements, and Pooty will keep all of them up to date. You may nest these as necessary:
