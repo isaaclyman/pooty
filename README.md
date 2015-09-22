@@ -32,7 +32,8 @@ Here's your first app.
 <html>
   <head>
     <!-- Put this at the head or tail of your document -->
-    <!-- You may load controllers, models, and shared functions in any order after Pooty and Zepto/jQuery are loaded -->
+    <!-- You may load controllers, models, and shared functions
+         in any order after Pooty and Zepto/jQuery are loaded -->
     <script type="text/javascript" src="zepto.min.js" />
     <script type="text/javascript" src="pooty.min.js" />
     <script type="text/javascript" src="welcomeMessage.model.js" />
