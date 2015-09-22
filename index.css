@@ -1,0 +1,61 @@
+html, body {
+    padding: 0;
+    border: none;
+    margin: 0;
+    background-color: #FFF;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+h1, h2, h3, h4, h5, h6, .title {
+    display: inline-block;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    margin: 0;
+}
+
+div.top.menu {
+    height: 67px;
+    padding: 0 10px;
+    margin: 0 0;
+    background-color: #0D47A1;
+    color: #FFF;
+    text-transform: uppercase;
+}
+
+h1.title {
+    font-size: 55px;
+}
+
+hr {
+    display: block;
+    padding: 0;
+    border: none;
+    margin: 0;
+    height: 16px;
+}
+
+hr.vert {
+    display: inline-block;
+    min-height: 1em;
+    height: 100%;
+    width: 25px;
+    background-color: transparent;
+}
+
+h2.menu.choice {
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+h2.menu.choice.chosen {
+    border-bottom: 2px solid #BBDEFB;
+}
+
+div.introduction.frontpiece {
+    text-align: center;
+    margin: 10px 8px;
+}
+
+img.large.mascot {
+    max-width: 500px;
+}

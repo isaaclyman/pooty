@@ -194,7 +194,7 @@ window = window || {};
                     };
                 },
                 button: function (property) {
-                    (!Pooty.utility.check(property, ['string'], 'this.button()')) return;
+                    if (!Pooty.utility.check(property, ['string'], 'this.button()')) return;
                     var selector = Pooty.utility.getModelValue(scope.mainModel, property);
                     
                     var bind = function (type, handler) {
