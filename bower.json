@@ -1,0 +1,26 @@
+{
+  "name": "pooty",
+  "version": "0.0.0",
+  "homepage": "https://github.com/isaaclyman/pooty",
+  "authors": [
+    "Isaac Lyman <mail@isaaclyman.com>"
+  ],
+  "description": "a VMC framework for Javascript",
+  "main": "dist\\pooty.min.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "pooty",
+    "vmc",
+    "framework"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
