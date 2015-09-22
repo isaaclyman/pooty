@@ -34,6 +34,7 @@ window = window || {};
     Pooty.models = Pooty.models || {};
     Pooty.controllers = Pooty.controllers || {};
     Pooty.state = Pooty.state || {};
+    Pooty.fns = Pooty.fns || {};
     
     // Function for data model creation
     //@param modelname: A name for the model
@@ -44,6 +45,7 @@ window = window || {};
         if (!Pooty.utility.check(modelname, ['string', 'object'], 'Pooty.model()')) return;
         if (typeof modelname === 'string') {
             return function (model) {
+                if (!Pooty.utility.check(model, ['object'], 'Pooty.model()')) return;
                 Pooty.models[modelname] = model;
                 Pooty.state[modelname] = Pooty.utility.clean(model);
             };
@@ -62,11 +64,23 @@ window = window || {};
         if (!Pooty.utility.check(controllername, ['string', 'function'], 'Pooty.control()')) return;
         if (typeof controllername === 'string') {
             return function (controllerFn) {
+                if (!Pooty.utility.check(controllerFn, ['function'], 'Pooty.control()')) return;
                 Pooty.controllers[controllername] = controllerFn;
             }
         } else { // controllername is a function
             Pooty.controllers.universal = controllername;
         }
+    };
+    
+    // Function for shared service creation
+    //@param fnname: A name for the function
+    // returns a function that takes the user-defined function as its parameter.
+    Pooty.fn = function (fnname) {
+        if (!Pooty.utility.check(fnname, ['string'], 'Pooty.fn()')) return;
+        return function (sharedfn) {
+            if (!Pooty.utility.check(sharedfn, ['function'], 'Pooty.fn()')) return;
+            Pooty.fns[fnname] = sharedfn;
+        };
     };
     
     Pooty.resource = {
@@ -107,6 +121,9 @@ window = window || {};
                         poot: poot,
                         yield: poot
                     }
+                },
+                fn: function (fnname) {
+                    return Pooty.fns[fnname];
                 },
                 input: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.input()')) return;
@@ -245,6 +262,7 @@ window = window || {};
                                 for (var msg in sendqueue) {
                                     socket.send(sendqueue[msg]);
                                 }
+                                sendqueue = [];
                             }
                         };
                         

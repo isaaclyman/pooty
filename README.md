@@ -32,8 +32,9 @@ Here's your first app.
 <html>
   <head>
     <!-- Put this at the head or tail of your document -->
+    <!-- You may load controllers, models, and shared functions in any order after Pooty and Zepto/jQuery are loaded -->
     <script type="text/javascript" src="zepto.min.js" />
-    <script type="text/javascript" src="pooty.js" />
+    <script type="text/javascript" src="pooty.min.js" />
     <script type="text/javascript" src="welcomeMessage.model.js" />
     <script type="text/javascript" src="welcomeMessage.control.js" />
   </head>
@@ -191,32 +192,34 @@ A home for your data model. The base `key: value` pair is modeled after `propert
 
 ```javascript
 {
-  head: {
-    title: 'span[poot].title',
-    user: {
-      name: 'poot.name',
-      age: 'poot.age',
-      instruments: {
-        primary: 'div.instrument poot.primary',
-        secondary: 'div.instrument poot.secondary',
-        fullList: null
+  'head': {
+    'title': 'span[poot].title',
+    'user': {
+      'name': 'poot.name',
+      'age': 'poot.age',
+      'instruments': {
+        'primary': 'div.instrument poot.primary',
+        'secondary': 'div.instrument poot.secondary',
+        'full list': null
       }
     },
-    favoriteArtists: [{
-        name: 'poot.artist-name',
-        born: 'poot.artist-birth',
-        died: 'poot.artist-death',
-        famousFor: 'poot.famous-for'
+  },
+  'body': {
+    'favorite artists': ['bucket.favorite-artists', {
+      'name': 'poot.artist-name',
+      'born': 'poot.artist-birth',
+      'died': 'poot.artist-death',
+      'famous for': 'poot.famous-for'
     }]
   }
 }
 ```
 
-Nested elements are accessed like this: `this.model('user.instruments.primary')`.
+Nested elements are accessed like this: `this.model('head.user.instruments.full list')`.
 
 Google 'CSS Selectors' for a number of great tutorials on how to use these. They are plugged directly into jQuery or Zepto to find the element you want, so you can use any selectors your chosen library supports.
 
-For arrays of data, add an array *with a single element* (an object), which will represent the model for each element in the array. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<bucket>` HTML element on the page should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
+For arrays of data, model an array *with two elements*: a CSS selector for your `<bucket>` element, and an object which will represent the model for each element in the array. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<bucket>` HTML element on the page should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
 
 Use the model, *not the controller*, to maintain state in your application. For any state information which should not be visible to the user, write `null` in place of a CSS selector. You will be able to change and access the value as normal but it will not attempt to update the view.
 
@@ -232,6 +235,13 @@ A home for your controller. The syntax is very similar to the `model` function:
 - `control(function ControllerFn)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `control()` function again, the first controller will be overwritten.
 
 - `control(string ControllerName)(function ControllerFn)` will create a named controller. You can create as many named controllers as you want with different names. If you create a controller with the same name as an earlier one, the earlier one will be overwritten. If the controller has the same exact name as a model, *or* if you are using a universal model, the two will be connected automatically. Otherwise, you'll have to make the connection yourself (see the `loadModel()` function below).
+
+#### `fn()`:
+A home for shared functions and services. This can only be invoked in one way:
+
+`fn(string FunctionName)(function SharedFunction)` assigns this function to the specified name. It can then be invoked in any controller. To get the function from within a controller, use `var sharedFunction = this.fn(string FunctionName);`, then invoke it like a regular function: `sharedFunction(arguments);`.
+
+You may not create a shared function without a name. There is no "universal" function.
 
 ### Controller's lexical scope (`this`)
 
@@ -255,6 +265,8 @@ otherModel('model-property').poot('A new value');
 `button(string ModelProperty)`: Searches the current model for the property with the specified name and returns a `button` object, which refers to a `<button>` tag (or any other element which may be clicked by the user). Again, this is not very useful on its own. See below for available methods.
 
 `url(string Url)`: Returns a `url` object which can be used for REST methods or websockets. See below for available methods.
+
+`fn(string FunctionName)`: Returns a function you have defined.
 
 
 ### The `model` object
