@@ -6,6 +6,10 @@ html, body {
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
+a {
+    color: inherit;
+}
+
 h1, h2, h3, h4, h5, h6, .title {
     display: inline-block;
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -28,6 +32,7 @@ h1.title {
 
 hr {
     display: block;
+    clear: both;
     padding: 0;
     border: none;
     margin: 0;
@@ -53,9 +58,81 @@ h2.menu.choice.chosen {
 
 div.introduction.frontpiece {
     text-align: center;
-    margin: 10px 8px;
+    padding: 45px 8px;
+    margin: 0;
+    background-color: #F0F4C3;
 }
 
 img.large.mascot {
     max-width: 500px;
+}
+
+div.section {
+    display: block;
+    padding: 65px 8px;
+    margin: 0;
+    text-align: center;
+}
+
+div.section.blue {
+    background-color: #BBDEFB;
+}
+
+h3.tagline {
+    font-size: 70px;
+}
+
+h3.subline {
+    font-size: 45px;
+}
+
+h3.section.title {
+    display: block;
+    text-align: center;
+    font-size: 60px;
+}
+
+img.emoji {
+    max-width: 100px;
+}
+
+div.body.half-width {
+    display: inline-block;
+    float: left;
+    clear: none;
+    padding: 0 20px;
+    width: 45%;
+    max-width: 45%;
+}
+
+@media screen and (max-width: 849px) {
+    div.body.half-width {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+div.body.full-width {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+}
+
+div.body {
+    max-width: 850px;
+    margin: 10px auto;
+    font-size: 20px;
+    line-height: 30px;
+}
+
+.left {
+    text-align: left;
+}
+
+div.code, code {
+    padding: 2px 2px;
+    border: 1px solid #999;
+    border-radius: 10px;
+    font-family: ‘Lucida Console’, Monaco, monospace;
 }

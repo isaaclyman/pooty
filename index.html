@@ -14,20 +14,52 @@
     
     <body>
         <div class="top menu">
-            <h1 class="title">Pooty</h1>
+            <a href="/index.html">
+                <h1 class="title">Pooty</h1>
+            </a>
             <hr class="vert">
-            <h2 class="menu choice chosen">Introduction</h2>
+            <a href="/index.html">
+                <h2 class="menu choice chosen">Introduction</h2>
+            </a>
             <hr class="vert">
-            <h2 class="menu choice">Documentation</h2>
+            <a href="/docs.html">
+                <h2 class="menu choice">Documentation</h2>
+            </a>
             <hr class="vert">
-            <h2 class="menu choice">Author</h2>
+            <a href="http://isaaclyman.com">
+                <h2 class="menu choice">Author</h2>
+            </a>
         </div>
+        
         <div class="introduction frontpiece">
             <img class="large mascot" src="img/mascot.svg">
             <hr>
-            <h3>Pooty.js: A VMC framework for Javascript.</h3>
+            <h3 class="tagline">Pooty.js: A VMC framework for Javascript</h3>
+            <h3 class="subline">that doesn't pretend to be anything it isn't.</h3>
         </div>
+        
+        <div class="blue section">
+            <img class="emoji" src="img/pig.svg">
+            <img class="emoji" src="img/finger-right.svg">
+            <img class="emoji" src="img/bath.svg">
+            <h3 class="section title">Let's clean up that view.</h3>
+            
+            <div class="subsection">
+                <div class="left half-width body">
+                You can use Pooty on an existing webpage without modifying the HTML. For advanced capabilities, you only need to learn three new tags: <code>&lt;poothtml&gt;</code>, <code>&lt;bucket&gt;</code>, and <code>&lt;template&gt;</code>. They do exactly what they sound like.
+                </div>
+                <div class="left half-width body code">
+                    &lt;html&gt;<br>
+                    &lt;body&gt;<br>
+                    &lt;span class="message"&gt;Helloooooooo Tina!&lt;/span&gt;<br>
+                    &lt;/body&gt;<br>
+                    &lt;/html&gt;<br>
+                    /* A Pooty-compatible page! Pooty can change the message inside the span, reactively, without any special HTML syntax. */
+                </div>
+
+                <hr>
+            </div>
+            </div>
     </body>
-    
     
 </html>
