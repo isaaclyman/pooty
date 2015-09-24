@@ -294,6 +294,8 @@ The `input` object refers to HTML `<input>` elements which accept user input. It
 
 `validate(function ValidationFn)`: Takes a function, to which is passed all user input. You can chain a `success(function)` method to this, which will run if your validation function returns a truthy value, or will be skipped if it returns a falsy value. The function passed to `success()` will be called with the user input value. Both `validate()` and `success()` return a binding object, which has an `off()` method that will destroy the binding.
 
+`mutate(function MutateFn)`: Takes a function that receives all user input for the purpose of modifying it and returning it. You may then chain a `poot.model()` function to plug the modified values into the model.
+
 To get the value of the model property (instead of binding it to another property), use the `model.poot()` method instead. 
 
 
@@ -323,6 +325,10 @@ The `url` object refers to a static URL string, which can be used for REST metho
 `post()`: Performs a POST request against the URL. See `get()`.
 
 `put()`: Performs a PUT request against the URL. See `get()`.
+
+`patch()`: Performs a PATCH request against the URL. See `get()`.
+
+`mutate(function MutateFn)`: Chain this to any HTTP method whose response may have a return value, and the function will be called with the response. You may chain a `poot.model()` function in order to plug the modified response into your model.
 
 `delete()`: Performs a DELETE request against the URL. See `get()`.
 
