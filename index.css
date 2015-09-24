@@ -28,6 +28,7 @@ div.top.menu {
 
 h1.title {
     font-size: 55px;
+    vertical-align: top;
 }
 
 hr {
@@ -50,6 +51,8 @@ hr.vert {
 h2.menu.choice {
     cursor: pointer;
     border-bottom: 2px solid transparent;
+    vertical-align: bottom;
+    margin-bottom: 20px;
 }
 
 h2.menu.choice.chosen {
@@ -78,6 +81,10 @@ div.section.blue {
     background-color: #BBDEFB;
 }
 
+div.section.brown {
+    background-color: #F0F4C3;
+}
+
 h3.tagline {
     font-size: 70px;
 }
@@ -90,10 +97,17 @@ h3.section.title {
     display: block;
     text-align: center;
     font-size: 60px;
+    margin-bottom: 45px;
 }
 
 img.emoji {
     max-width: 100px;
+    margin: 0 10px;
+}
+
+div.subsection {
+    max-width: 1250px;
+    margin: 0 auto;
 }
 
 div.body.half-width {
@@ -108,14 +122,18 @@ div.body.half-width {
 @media screen and (max-width: 849px) {
     div.body.half-width {
         display: block;
-        width: 100%;
-        max-width: 100%;
+        width: 90%;
+        max-width: 90%;
+    }
+    
+    .hide-phone {
+        display: none;
     }
 }
 
 div.body.full-width {
     display: block;
-    width: 100%;
+    width: 80%;
     max-width: 100%;
 }
 
@@ -133,6 +151,6 @@ div.body {
 div.code, code {
     padding: 2px 2px;
     border: 1px solid #999;
-    border-radius: 10px;
+    border-radius: 7px;
     font-family: ‘Lucida Console’, Monaco, monospace;
 }

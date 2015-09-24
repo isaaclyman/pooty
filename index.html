@@ -18,7 +18,7 @@
                 <h1 class="title">Pooty</h1>
             </a>
             <hr class="vert">
-            <a href="/index.html">
+            <a href="/index.html" class="hide-phone">
                 <h2 class="menu choice chosen">Introduction</h2>
             </a>
             <hr class="vert">
@@ -26,7 +26,7 @@
                 <h2 class="menu choice">Documentation</h2>
             </a>
             <hr class="vert">
-            <a href="http://isaaclyman.com">
+            <a href="http://isaaclyman.com" class="hide-phone">
                 <h2 class="menu choice">Author</h2>
             </a>
         </div>
@@ -42,24 +42,97 @@
             <img class="emoji" src="img/pig.svg">
             <img class="emoji" src="img/finger-right.svg">
             <img class="emoji" src="img/bath.svg">
-            <h3 class="section title">Let's clean up that view.</h3>
+            <h3 class="section title">Clean up your view.</h3>
             
             <div class="subsection">
                 <div class="left half-width body">
-                You can use Pooty on an existing webpage without modifying the HTML. For advanced capabilities, you only need to learn three new tags: <code>&lt;poothtml&gt;</code>, <code>&lt;bucket&gt;</code>, and <code>&lt;template&gt;</code>. They do exactly what they sound like.
+                You can use Pooty on an existing webpage without modifying the HTML. No <code>{{</code>, no <code>bind</code> attributes, no business logic and no fuss.
+                <br><br>
+                For advanced capabilities, you only need to learn three new tags: <code>&lt;poothtml&gt;</code>, <code>&lt;bucket&gt;</code>, and <code>&lt;template&gt;</code>. That's it. There's nothing confusing in a Pooty view, because it's mostly vanilla HTML.
                 </div>
                 <div class="left half-width body code">
                     &lt;html&gt;<br>
-                    &lt;body&gt;<br>
-                    &lt;span class="message"&gt;Helloooooooo Tina!&lt;/span&gt;<br>
-                    &lt;/body&gt;<br>
+                    &emsp;&lt;body&gt;<br>
+                    &emsp;&emsp;&lt;span class="message"&gt;Helloooooooo Tina!&lt;/span&gt;<br>
+                    &emsp;&lt;/body&gt;<br>
                     &lt;/html&gt;<br>
                     /* A Pooty-compatible page! Pooty can change the message inside the span, reactively, without any special HTML syntax. */
                 </div>
 
                 <hr>
             </div>
+        </div>
+        
+        <div class="brown section">
+            <img class="emoji" src="img/liberty.svg">
+            <img class="emoji" src="img/call.svg">
+            <img class="emoji" src="img/shots.svg">
+            
+            <h3 class="section title">Take control of your model.</h3>
+            
+            <div class="subsection">
+                <div class="left half-width body code">
+                    Pooty.model({<br>
+                    &emsp;'message': 'span.message'<br>
+                    });
+                </div>
+                
+                <div class="left half-width body">
+                    Stop wondering what your model looks like, what's in it, and how to access it. 
+                    <br><br>
+                    Most frameworks try to abstract the data layer away from you. Pooty literalizes it. You decide what goes in, what shape it takes, and where it should be displayed.
+                </div>
+                
+                <hr>
             </div>
+        </div>
+        
+        <div class="blue section">
+            <img class="emoji" src="img/think.svg">
+            <img class="emoji" src="img/fast-forward.svg">
+            <img class="emoji" src="img/toilet.svg">
+            <h3 class="section title">Plan now, relax later.</h3>
+            
+            <div class="subsection">
+                <div class="left half-width body">
+                    Pooty encourages a functional approach to data binding, API interaction, and user input handling. Likewise, it discourages micromanagement of events and application state.
+                    <br><br>
+                    You describe processes and callbacks, and Pooty does the rest. Most of the things you need to do are built in.
+                </div>
+                
+                <div class="left half-width body code">
+                    Pooty.control(function () {<br>
+                    <br>
+                    &emsp;// Let's do a GET request & display the response.<br>
+                    &emsp;this.url('/API').get().poot.model('message');<br>
+                    <br>
+                    &emsp;// Hey...that wasn't hard at all.<br>                    
+                    });
+                </div>
+            </div>
+            
+            <hr>
+        </div>
+        
+        <div class="brown section">
+            <img class="emoji" src="img/cool.svg">
+            <img class="emoji" src="img/bump.svg">
+            <img class="emoji" src="img/flames.svg">
+            <h3 class="section title">Be a hero.</h3>
+            
+            <div class="subsection">
+                <div class="full-width body">
+                    Look at you. You just spun up a reactive SPA in fifteen minutes. It wasn't even difficult.
+                    <br><br>
+                    <code>Lol, wat?</code>
+                    <br><br>
+                    Your HTML is clean and maintainable, your data model is clearly defined, and your controller is so readable a six-year-old could understand it. You have done something truly amazing.
+                    <br><br>
+                    Go ahead: uncap your gold-trimmed fountain pen and check another item off your bucket list.
+                </div>
+            </div>
+            
+        </div>
     </body>
     
 </html>
