@@ -146,8 +146,12 @@ window = window || {};
                     if (!Pooty.utility.check(property, ['string'], 'this.input()')) return;
                     var selector = Pooty.utility.getSelector(scope.mainModel, property);
                     
-                    var poot = function (value) {
-                        Pooty.utility.setInputValue(selector, value);
+                    var poot = function () {
+                        if (!arguments.length) {
+                            return Pooty.utility.getInputValue(selector);
+                        }
+                        
+                        Pooty.utility.setInputValue(selector, Array.prototype.join.call(arguments, ' '));
                     };
                     
                     poot.model = function (targetProperty) {

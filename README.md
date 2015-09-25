@@ -132,7 +132,7 @@ Pooty.control('Welcome Message')(function () {
 });
 ```
 
-Since this is a v0.0 code base, expect everything in this documentation to change at any moment.
+Since this is a pre-release code base, expect everything in this documentation to change at any moment.
 
 ## "Athlete" alias
 
@@ -225,7 +225,7 @@ Nested elements are accessed like this: `this.model('head.user.instruments.full 
 
 Google 'CSS Selectors' for a number of great tutorials on how to use these. They are plugged directly into jQuery or Zepto to find the element you want, so you can use any selectors your chosen library supports.
 
-For arrays of data, model an array *with two elements*: a CSS selector for your `<bucket>` element, and an object which will represent the model for each element in the array. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<bucket>` HTML element on the page should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
+For arrays of data, enter an array *with two elements*: a CSS selector for your `<bucket>` element, and an object which will represent the model for each element in the array. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<bucket>` HTML element on the page should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
 
 Use the model, *not the controller*, to maintain state in your application. For any state information which should not be visible to the user, write `null` in place of a CSS selector. You will be able to change and access the value as normal but it will not attempt to update the view.
 
@@ -288,6 +288,8 @@ The `model` object refers to HTML elements which are informative (i.e. interacti
 
 The `input` object refers to HTML `<input>` elements which accept user input. It is obtained by calling `this.input(string)` with a property name from the model, and has the following properties and methods:
 
+`poot()` (no parameters): Returns the text inside the input.
+
 `poot(string)`: Changes the text inside the input to the specified value.
 
 `poot.model(string ModelProperty)`: Makes a permanent binding which will replicate everything typed into the `input` element on another property of the model. Returns a binding object, which has an `off()` method that will destroy the binding.
@@ -295,8 +297,6 @@ The `input` object refers to HTML `<input>` elements which accept user input. It
 `validate(function ValidationFn)`: Takes a function, to which is passed all user input. You can chain a `success(function)` method to this, which will run if your validation function returns a truthy value, or will be skipped if it returns a falsy value. The function passed to `success()` will be called with the user input value. Both `validate()` and `success()` return a binding object, which has an `off()` method that will destroy the binding.
 
 `mutate(function MutateFn)`: Takes a function that receives all user input for the purpose of modifying it and returning it. You may then chain a `poot.model()` function to plug the modified values into the model.
-
-To get the value of the model property (instead of binding it to another property), use the `model.poot()` method instead. 
 
 
 ### The `button` object
@@ -353,6 +353,30 @@ The `websocket` object refers to an open websocket connection, which can be used
 `Pooty(string ModelName)`: This is useful in the browser console. It will log a full model object to the console, giving a snapshot of application state.
 
 `Pooty.utility.check(var, [string], string)`: Accepts a variable, an array of `typeof` strings, and a function signature as a string. Asserts that the variable type matches at least one of the `typeof` strings, and throws an error if it doesn't. Uses the function signature as part of the error message. Use this to implement type safety in your app.
+
+# TO DO
+
+The following things are not yet implemented in Pooty:
+
+- **Capturing view templates**. Will need to find, save and hide template blocks on page load. Save them as properties of `Pooty.templates` by name.
+
+- **Loading external view templates**. Ensure that the controllers don't run until all the templates have been gotten.
+
+- **Inserting view templates**. Only worry about the ones visible at page load; `bucket` templates can be handled on the fly.
+
+- **Bucket and friends**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Make sure `bucket` selection is handled well.
+
+- **Mutate**. Both `input` and `url` ought to have a `mutate` method for incoming data.
+
+- **Null selectors**. For state-only data which is not bound to the view, Pooty should not attempt to update or get the view.
+
+- **Unit tests**. Priorities are 1) simplicity, and 2) complete code coverage. All code should run without errors.
+
+- **Demo page**. All functions should be demonstrated in a simple manner.
+
+- **Documentation**. Non-technical information will be moved to the /documentation site.
+
+- **To-do application**. Create a simple to-do application for comparison with other frameworks.
 
 # Technical Q&A
 
