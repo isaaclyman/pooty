@@ -384,16 +384,25 @@ window = window || {};
     Pooty.utility.getState = function (model, state, path) {
         path = Pooty.utility.makePathArray(path);
         var selector = Pooty.utility.traverse(model, path);
-        var viewValue = Pooty.utility.getViewValue(selector);
-        Pooty.utility.mutate(state, path, viewValue);
-        return viewValue;
+        
+        if (typeof selector === 'string') {
+            var viewValue = Pooty.utility.getViewValue(selector);
+            Pooty.utility.mutate(state, path, viewValue);
+            return viewValue;
+        } else {
+            return Pooty.utility.traverse(state, path);
+        }
+        
     };
     
     Pooty.utility.setState = function (model, state, path, newValue) {
         path = Pooty.utility.makePathArray(path);
         var selector = Pooty.utility.traverse(model, path);
         Pooty.utility.mutate(state, path, newValue);
-        Pooty.utility.setViewValue(selector, newValue);
+        
+        if (typeof selector === 'string') {
+            Pooty.utility.setViewValue(selector, newValue);
+        }
     };
 
     // Checks an argument's type

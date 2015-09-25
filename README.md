@@ -368,7 +368,7 @@ The following things are not yet implemented in Pooty:
 
 - **Mutate**. Both `input` and `url` ought to have a `mutate` method for incoming data.
 
-- **Null selectors**. For state-only data which is not bound to the view, Pooty should not attempt to update or get the view.
+- **Null selectors**. ~~For state-only data which is not bound to the view, Pooty should not attempt to update or get the view.~~ DONE.
 
 - **Unit tests**. Priorities are 1) simplicity, and 2) complete code coverage. All code should run without errors.
 
