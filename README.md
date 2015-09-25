@@ -253,9 +253,9 @@ You may not create a shared function without a name. There is no "universal" fun
 
 Inside the controller is where the magic happens. The `this` keyword inside of a controller refers to an object that has the following properties and methods:
 
-`loadModel(string ModelName)`: Loads the model with the specified name and connects it to the current controller. Use this only once, and only if needed, at the very top of your controller.
+`useModel(string ModelName)`: Finds the model with the specified name and connects it to the current controller. Use this only once, and only if needed, at the very top of your controller.
 
-`useModel(string ModelName)`: Returns any auxiliary model you may want to use. You may store it in a variable and access it in the same way as your regular model, like so:
+`loadModel(string ModelName)`: Returns any auxiliary model you may want to use. You may store it in a variable and access it in the same way as your regular model, like so:
 
 ```javascript
 var otherModel = this.useModel('otherModel');
@@ -288,9 +288,9 @@ The `model` object refers to HTML elements which are informative (i.e. interacti
 
 The `input` object refers to HTML `<input>` elements which accept user input. It is obtained by calling `this.input(string)` with a property name from the model, and has the following properties and methods:
 
-`poot`: A property which can be used to bind all user input to another part of the model.
+`poot(string)`: Changes the text inside the input to the specified value.
 
-`poot.model(string ModelProperty)`: The most common implementation of the `poot` property. Makes a permanent binding which will replicate everything typed into the `input` element on another property of the model. Returns a binding object, which has an `off()` method that will destroy the binding.
+`poot.model(string ModelProperty)`: Makes a permanent binding which will replicate everything typed into the `input` element on another property of the model. Returns a binding object, which has an `off()` method that will destroy the binding.
 
 `validate(function ValidationFn)`: Takes a function, to which is passed all user input. You can chain a `success(function)` method to this, which will run if your validation function returns a truthy value, or will be skipped if it returns a falsy value. The function passed to `success()` will be called with the user input value. Both `validate()` and `success()` return a binding object, which has an `off()` method that will destroy the binding.
 

@@ -6,10 +6,14 @@
         <script src="bower_components/zepto/zepto.min.js"></script>
         <script src="src/pooty.js"></script>
         
+        <link rel="icon" type="image/png" href="img/mascot-icon.png" />
+        
         <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
         
         <link rel="stylesheet" type="text/css" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="index.css">
+        
+        <title>Pooty.js</title>
     </head>
     
     <body>
@@ -35,8 +39,10 @@
             <img class="large mascot" src="img/mascot.svg">
             <hr>
             <h3 class="tagline">Pooty.js: A VMC framework for Javascript</h3>
-            <h3 class="subline">that doesn't pretend to be anything it isn't.</h3><br><br>
-            <span>Currently under construction.</span>
+            <h3 class="subline">that doesn't pretend to be anything it isn't.</h3>
+            <br><br>
+            <hr>
+            <a href="/dist/pooty.min.js" download="pooty.min.js"><button class="big green">Download Now</button></a>
         </div>
         
         <div class="blue section">
@@ -66,8 +72,8 @@
         
         <div class="brown section">
             <img class="emoji" src="img/liberty.svg">
-            <img class="emoji" src="img/call.svg">
-            <img class="emoji" src="img/shots.svg">
+            <img class="emoji" src="img/control.svg">
+            <img class="emoji" src="img/stopgo.svg">
             
             <h3 class="section title">Take control of your model.</h3>
             
@@ -116,59 +122,45 @@
         </div>
         
         <div class="brown section">
-            <img class="emoji" src="">
-            <img class="emoji" src="">
-            <img class="emoji" src="">
+            <img class="emoji" src="img/shades.svg">
+            <img class="emoji" src="img/plug.svg">
+            <img class="emoji" src="img/explode.svg">
             <h3 class="section title">Keep it reactive.</h3>
             
             <div class="subsection">
                 <div class="left half-width body code">
-                    &lt;div class="left half-width body no-padding"&gt;<br>
-                        &emsp;&lt;label for="example-input"&gt;<br>
-                        &emsp;&emsp;Is Pooty awesome?<br>
-                        &emsp;&lt;/label&gt;<br>
-                        &emsp;&lt;br&gt;<br>
-                        &emsp;&lt;input id="example-input" class="example-input" placeholder="What do you think?"&gt;<br>
-                    &lt;/div&gt;<br>
-                    &lt;div class="left half-width body no-padding"&gt;<br>
-                        &emsp;You said:&lt;br&gt;<br>
-                        &emsp;&lt;poot class="example-response"&gt;&nbsp;&lt;/poot&gt;&lt;br&gt;<br>
-                        &emsp;&lt;button class="example-button"&gt;Say it loud!&lt;/button&gt;<br>
-                    &lt;/div&gt;<br>
+                    Pooty.model({<br>
+                        &emsp;'example': {<br>
+                            &emsp;&emsp;'input': 'input.example-input',<br>
+                            &emsp;&emsp;'response': 'poot.example-response',<br>
+                            &emsp;&emsp;'button': 'button.example-button'<br>
+                        &emsp;}<br>
+                    });<br>
                     <br>
-                    &lt;script type="text/javascript"&gt;<br>
-                        Pooty.model({<br>
-                            &emsp;'example': {<br>
-                                &emsp;&emsp;'input': '.example-input',<br>
-                                &emsp;&emsp;'response': '.example-response',<br>
-                                &emsp;&emsp;'button': '.example-button'<br>
-                            &emsp;}<br>
-                        });<br>
+                    Pooty.control(function () {<br>
+                        &emsp;var control = this;<br><br>
+                        &emsp;this.input('example.input')<br>
+                        &emsp;&emsp;.poot.model('example.response');<br>
                         <br>
-                        Pooty.control(function () {<br>
-                            &emsp;var control = this;<br><br>
-                            &emsp;this.input('example.input')<br>
-                            &emsp;&emsp;.poot.model('example.response');<br>
-                            &emsp;this.button('example.button').click(function () {<br>
-                                &emsp;&emsp;var answer = 'Yes!!!';<br>
-                                &emsp;&emsp;control.model('example.response').poot(answer);<br>
-                                &emsp;&emsp;control.model('example.input').poot(answer);<br>
-                            &emsp;});<br>
-                        });<br>
-                    &lt;/script&gt;
+                        &emsp;this.button('example.button').click(function () {<br>
+                            &emsp;&emsp;var answer = 'Yes!!!';<br>
+                            &emsp;&emsp;control.model('example.response').poot(answer);<br>
+                            &emsp;&emsp;control.model('example.input').poot(answer);<br>
+                        &emsp;});<br>
+                    });<br>
                 </div>
                 
                 <div class="left half-width body">
                     Pooty is driven by events, not the system clock, so it stays on top of things without getting bogged down. Check it out:
                     <br><br>
                     <div class="left half-width body no-padding">
-                        <label for="example-input">Is Pooty awesome?</label><br>
-                        <input id="example-input" class="example-input" placeholder="What do you think?">
+                        <label for="example-input">input.example-input:</label><br>
+                        <input id="example-input" class="example-input" placeholder="Say something"><br><br>
+                        <button class="example-button">button.example-button</button>
                     </div>
                     <div class="left half-width body no-padding">
-                        You said:<br>
-                        <poot class="example-response">&nbsp;</poot><br>
-                        <button class="example-button">Say it loud!</button>
+                        poot.example-response:<br>
+                        <poot class="example-response">&nbsp;</poot>
                     </div>
                     <script type="text/javascript">
                         Pooty.model({
@@ -186,7 +178,7 @@
                             this.button('example.button').click(function () {
                                 var answer = 'Yes!!!';
                                 control.model('example.response').poot(answer);
-                                control.model('example.input').poot(answer);
+                                control.input('example.input').poot(answer);
                             });
                         });
                     </script>
@@ -197,9 +189,9 @@
         </div>
         
         <div class="blue section">
-            <img class="emoji" src="img/cool.svg">
             <img class="emoji" src="img/bump.svg">
             <img class="emoji" src="img/flames.svg">
+            <img class="emoji" src="img/money.svg">
             <h3 class="section title">Be a hero.</h3>
             
             <div class="subsection">

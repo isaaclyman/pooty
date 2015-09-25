@@ -17,6 +17,29 @@ h1, h2, h3, h4, h5, h6, .title {
     margin: 0;
 }
 
+button {
+    padding: 10px;
+    border: 1px solid #4cae4c;
+    border-radius: 5px;
+    background-color: #5cb85c;
+    color: #FFF;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    cursor: pointer;
+}
+
+button.big.green {
+    height: 55px;
+    width: 255px;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+input {
+    padding: 5px 10px;
+    border: 1px solid #999;
+    border-radius: 4px;
+}
+
 div.top.menu {
     height: 67px;
     padding: 0 10px;

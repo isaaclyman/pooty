@@ -96,37 +96,42 @@ window = window || {};
     };
     
     Pooty.resource = {
-        controllerScope: function (mainModel) {
+        controllerScope: function (mainModel, mainState) {
             var scope = this;
+            scope.mainModel = mainModel;
+            scope.mainState = mainState;
+            
             scope.functions = {
                 // Change the model associated with this controller
-                loadModel: function (name) {
+                useModel: function (name) {
                     if (!Pooty.utility.check(name, ['string'], 'this.loadModel()')) return;
                     var newModel = Pooty.models[name];
-                    if (!newModel) {
-                        return Pooty.error('No model found', 'Could not find a model with the name:', name);
+                    var newState = Pooty.state[name];
+                    if (!newModel || !newState) {
+                        return Pooty.error('No model found', 'Could not find a model with the name: ', name);
                     }
                     scope.mainModel = newModel;
+                    scope.mainState = newState;
                     return;
                 },
                 // Use an auxiliary model
-                useModel: function (name) {
+                loadModel: function (name) {
                     if (!Pooty.utility.check(name, ['string'], 'this.useModel()')) return;
                     var newModel = Pooty.models[name];
-                    if (!newModel) {
-                        return Pooty.error('No model found', 'Could not find a model with the name:', name);
+                    var newState = Pooty.state[name];
+                    if (!newModel || !newState) {
+                        return Pooty.error('No model found', 'Could not find a model with the name: ', name);
                     }
-                    return Pooty.resource.controllerScope(newModel).model;
+                    return Pooty.resource.controllerScope(newModel, newState).model;
                 },
                 model: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.model()')) return;
-                    var selector = Pooty.utility.getModelValue(scope.mainModel, property);
                     
                     var poot = function () {
                         if (!arguments.length) {
-                            return Pooty.utility.getState(selector);
+                            return Pooty.utility.getState(scope.mainModel, scope.mainState, selector);
                         }
-                        Pooty.utility.setState(selector, Array.prototype.join.call(arguments, ' '));
+                        Pooty.utility.setState(scope.mainModel, scope.mainState, property, Array.prototype.join.call(arguments, ' '));
                     };
                     
                     return {
@@ -139,21 +144,23 @@ window = window || {};
                 },
                 input: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.input()')) return;
-                    var selector = Pooty.utility.getModelValue(scope.mainModel, property);
+                    var selector = Pooty.utility.getSelector(scope.mainModel, property);
                     
-                    var poot = {
-                        model: function (targetProperty) {
-                            if (!Pooty.utility.check(targetProperty, ['string'], 'this.input().poot.model()')) return;
-                            var targetSelector = Pooty.utility.getModelValue(scope.mainModel, targetProperty);
-                            var handler = function () {
-                                scope.functions.model(selector).poot($(selector).val());
-                            };
-                            $(selector).on('keyup', null, handler);
+                    var poot = function (value) {
+                        Pooty.utility.setInputValue(selector, value);
+                    };
+                    
+                    poot.model = function (targetProperty) {
+                        if (!Pooty.utility.check(targetProperty, ['string'], 'this.input().poot.model()')) return;
 
-                            return {
-                                off: function () {
-                                    $(selector).off('keyup', null, handler);
-                                }
+                        var handler = function () {
+                            scope.functions.model(targetProperty).poot(Pooty.utility.getInputValue(selector));
+                        };
+                        $(selector).on('keyup', null, handler);
+
+                        return {
+                            off: function () {
+                                $(selector).off('keyup', null, handler);
                             }
                         }
                     };
@@ -195,9 +202,10 @@ window = window || {};
                 },
                 button: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.button()')) return;
-                    var selector = Pooty.utility.getModelValue(scope.mainModel, property);
+                    var selector = Pooty.utility.getSelector(scope.mainModel, property);
                     
-                    var bind = function (type, handler) {
+                    var bindHandler = function (type, handler) {
+                        if (!Pooty.utility.check(handler, ['function'], 'this.button.' + type + '()')) return;
                         var off = {};
                         handler = handler.bind(off);
                         off.off = function () {
@@ -208,8 +216,8 @@ window = window || {};
                     };
                     
                     return {
-                        click: bind.bind('click'),
-                        doubleclick: bind.bind('dblclick')
+                        click: bindHandler.bind(null, 'click'),
+                        doubleclick: bindHandler.bind(null, 'dblclick')
                     };
                 },
                 url: function (url) {
@@ -308,23 +316,34 @@ window = window || {};
 
     Pooty.utility = Pooty.utility || {};
     
-    // Resets every value in a model to null
-    Pooty.utility.clean = function clean(model) {
-        for (var key in model) {
+    // Resets every non-object value in a model to null
+    Pooty.utility.clean = function (model) {
+        var cleanModel = $.extend(true, {}, model);
+        
+        clean(cleanModel);
+        
+        return cleanModel;
+    };
+    
+    function clean(object) {
+        for (var key in object) {
             // Ignore prototypical properties
-            if (!model.hasOwnProperty(key)) continue;
-            if (typeof model[key] === 'object') {
-                clean(model[key]);
+            if (!object.hasOwnProperty(key)) continue;
+            if (typeof object[key] === 'object') {
+                clean(object[key]);
             } else {
-                model[key] = null;
+                object[key] = null;
             }
         }
+    }
+    
+    Pooty.utility.makePathArray = function(path) {
+        return path.split('.');
     };
     
     // Traverses an object using a path formatted as 'object.property.subproperty...'
     Pooty.utility.traverse = function (object, path) {
-        path = path.split('.');
-        var value = model;
+        var value = object;
         for (var key in path) {
             value = value[path[key]];
         }
@@ -336,6 +355,11 @@ window = window || {};
         var last = path.pop();
         Pooty.utility.traverse(object, path)[last] = newValue;
     };
+    
+    Pooty.utility.getSelector = function (model, path) {
+        path = Pooty.utility.makePathArray(path);
+        return Pooty.utility.traverse(model, path);
+    };
 
     Pooty.utility.getViewValue = function (selector) {
         return $(selector).text();
@@ -345,14 +369,24 @@ window = window || {};
         $(selector).text(value);
     };
     
-    Pooty.utility.getState = function (model, path, state) {
+    Pooty.utility.getInputValue = function (selector) {
+        return $(selector).val();
+    };
+    
+    Pooty.utility.setInputValue = function (selector, value) {
+        $(selector).val(value);
+    };
+    
+    Pooty.utility.getState = function (model, state, path) {
+        path = Pooty.utility.makePathArray(path);
         var selector = Pooty.utility.traverse(model, path);
         var viewValue = Pooty.utility.getViewValue(selector);
         Pooty.utility.mutate(state, path, viewValue);
         return viewValue;
     };
     
-    Pooty.utility.setState = function (model, path, state, newValue) {
+    Pooty.utility.setState = function (model, state, path, newValue) {
+        path = Pooty.utility.makePathArray(path);
         var selector = Pooty.utility.traverse(model, path);
         Pooty.utility.mutate(state, path, newValue);
         Pooty.utility.setViewValue(selector, newValue);
@@ -362,8 +396,8 @@ window = window || {};
     Pooty.utility.check = function (argument, types, fnName) {
         if (!~types.indexOf(typeof argument) || argument === null) {
             Pooty.error('Incorrect parameter',
-                        fnName + ' expected an argument of type ' + types.join('||') + ', but instead received:',
-                        argument);
+                        fnName + ' expected an argument of type ' + types.join('||') + ', but instead received: ',
+                        argument || 'null');
             return false;
         }
         return true;
