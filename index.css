@@ -180,4 +180,5 @@ div.code, code {
     border: 1px solid #999;
     border-radius: 7px;
     font-family: ‘Lucida Console’, Monaco, monospace;
+    overflow-x: auto;
 }
