@@ -1,4 +1,4 @@
-# Pooty v0.0 (incomplete)
+# Pooty v0.4 (incomplete)
 (Known in more formal contexts as Athlete.js)
 
 ## What is Pooty?

@@ -34,6 +34,12 @@ button.big.green {
     text-transform: uppercase;
 }
 
+div.little.big {
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
 input {
     padding: 5px 10px;
     border: 1px solid #999;
@@ -181,4 +187,23 @@ div.code, code {
     border-radius: 7px;
     font-family: ‘Lucida Console’, Monaco, monospace;
     overflow-x: auto;
+}
+
+div.bottom.menu {
+    height: 50px;
+    padding: 40px 10px;
+    margin: 0 0;
+    background-color: #0D47A1;
+    color: #FFF;
+}
+
+div.center.statement {
+    text-align: center;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;;
+    font-size: 25px;
+    text-transform: uppercase;
+}
+
+div.license {
+    text-align: center;
 }
