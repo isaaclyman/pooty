@@ -73,8 +73,8 @@ body {
 ```javascript
 // Welcome Message model
 Pooty.model('Welcome Message')({
-  'welcome-message': 'poot.welcome-msg',
-  'new-msg': 'input[poot].new-msg'
+  'welcome message': 'poot.welcome-msg',
+  'new msg': 'input[poot].new-msg'
 });
 ```
 
@@ -85,48 +85,46 @@ Pooty.model('Welcome Message')({
 Pooty.control('Welcome Message')(function () {
   // You can put a message on the page this way, with a simple string
   var message = 'Hellooooooo Tina!';
-  this.model('welcome-message').poot(message);
+  this.model('welcome message').poot(message);
+  
+  // Then allow the user to change it using the input
+  this.input('new msg').poot.model('welcome message');
 
   // Or this way, with a REST API and AJAX
   /*
-  this.url('/message').get().poot.model('welcome-message');
+  this.url('/message').get().poot.model('welcome message');
   */
 
   // Or this way, with a REST API, AJAX and a failsafe
   /*
   this.url('/message').get().poot().success(function (message) {
-    this.model('welcome-message').poot(message);
+    this.model('welcome message').poot(message);
   }).failure(function (error) {
-    this.model('welcome-message').poot('Something really bad has happened.', error);
+    this.model('welcome message').poot('Something really bad has happened.', error);
   });
   */
 
   // Or this way, with a WebSocket
   /*
-  this.url('/message-ws').websocket().poot.model('welcome-message');
-  */
-
-  // Or this way, with the input on the page bound to the message
-  /*
-  this.input('new-msg').poot.model('welcome-message');
+  this.url('/message-ws').websocket().poot.model('welcome message');
   */
 
   // Or this way, with a validated input bound to the message
   /*
-  this.input('new-msg').validate(function (message) {
+  this.input('new msg').validate(function (message) {
     if (message.length > 140) {
-      this.model('welcome-message').poot('This message is too long.');
+      this.model('welcome message').poot('This message is too long.');
       return false;
     }
     return true;
   }).success(function (message) {
-    this.model('welcome-message').poot(message);
+    this.model('welcome message').poot(message);
   });
   */
 
   // And when you need to send a value somewhere...
   /*
-  var current = this.model('welcome-message').poot();
+  var current = this.model('welcome message').poot();
   this.url('/database').post(current);
   */
 });
