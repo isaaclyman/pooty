@@ -391,6 +391,8 @@ The following things are not yet implemented in Pooty:
 
 - ~~**Null selectors**. For state-only data which is not bound to the view, Pooty should not attempt to update or get the view.~~ DONE.
 
+- **Finish websocket**. Websocket is still a work in progress. Make sure it's logically complete.
+
 - **Hide and show**. Hide or show model values and have them disappear or reappear on the view.
 
 - **Unit tests**. Priorities are 1) simplicity, and 2) complete code coverage. All code should run without errors.
