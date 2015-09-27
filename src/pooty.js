@@ -33,11 +33,13 @@ window = window || {};
     // State: A home for the application state
     // Fns: A home for user-defined shared functions and services
     // Templates: A home for user-defined templates
+    // TemplateUrls: A home for external template URLs
     Pooty.models = Pooty.models || {};
     Pooty.controllers = Pooty.controllers || {};
     Pooty.state = Pooty.state || {};
     Pooty.fns = Pooty.fns || {};
     Pooty.templates = Pooty.templates || {};
+    Pooty.templateUrls = Pooty.templateUrls || [];
     
     // Function for data model creation
     //@param modelname: A name for the model
@@ -86,12 +88,12 @@ window = window || {};
         };
     };
     
-    // Function to fetch external HTML templates
+    // Function to queue up external HTML templates
     //@param url: The location of the template
     Pooty.template = function () {
         var urls = Array.prototype.slice.call(arguments);
         urls.forEach(function (url) {
-            Pooty.templates.push($.get(url));
+            Pooty.templateUrls.push(url);
         });
     };
     
@@ -144,6 +146,7 @@ window = window || {};
                 },
                 input: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.input()')) return;
+                    var inputObj = this;
                     var selector = Pooty.utility.getSelector(scope.mainModel, property);
                     
                     var poot = function () {
@@ -186,7 +189,7 @@ window = window || {};
                         };
                         
                         var success = function (successFn) {
-                            validated ? successFn($(selector).val()) : null;
+                            validated ? successFn(Pooty.utility.getInputValue(selector)) : null;
                             return {
                                 off: off
                             }
@@ -198,10 +201,40 @@ window = window || {};
                         }
                     }
                     
+                    var mutate = function (mutateFn) {                        
+                        var poot = function () {
+                            return mutateFn(Pooty.utility.getInputValue(selector));
+                        };
+                        
+                        poot.model = function (property) {
+                            var off = {};
+                            var handler = function () {
+                                scope.functions.model(property).poot(mutateFn.call(off,
+                                                                     Pooty.utility.getInputValue(selector)));
+                            };
+                            
+                            $(selector).on('keyup', null, handler);
+                            
+                            off.off = function () {
+                                $(selector).off('keyup', null, handler);
+                            };
+                            
+                            return {
+                                off: off.off
+                            };
+                        };
+                        
+                        return {
+                            poot: poot,
+                            yield: poot
+                        };
+                    };
+                    
                     return {
                         poot: poot,
                         yield: poot,
-                        validate: validate
+                        validate: validate,
+                        mutate: mutate
                     };
                 },
                 button: function (property) {
@@ -241,16 +274,45 @@ window = window || {};
                         if (!Pooty.utility.check(type, ['string'], 'urlObj.http()')) return;
                         urlObj.type = type || urlObj.type;
                         var response = $.ajax(urlObj);
+                        
                         var poot = function () {
                             return response;
                         };
+                        
                         poot.model = function (property) {
                             if (!Pooty.utility.check(property, ['string'], 'httpResponse.poot.model()')) return;
-                            response.then(function (response) {
+                            response.done(function (response) {
                                 scope.functions.model(property).poot(response);
                             });
                         };
-                        return poot;
+                        
+                        var mutate = function (handlerFn) {
+                            var promise = response.done(function (response) {
+                                response = handlerFn(response);
+                                return response;
+                            });
+                            
+                            var poot = function () {
+                                return promise;
+                            };
+                            
+                            poot.model = function (property) {
+                                if (!Pooty.utility.check(property, ['string'], 'httpResponse.mutate().poot.model()')) return;
+                                response.done(function (response) {
+                                    scope.functions.model(property).poot(handlerFn(response));
+                                });
+                            }
+                            
+                            return {
+                                poot: poot
+                            };
+                        };
+                        
+                        
+                        return {
+                            poot: poot,
+                            mutate: mutate
+                        };
                     };
                     
                     var websocket = function (protocol) {
@@ -309,6 +371,8 @@ window = window || {};
                     this.patch = ajax.bind(this, 'patch');
                     this.delete = ajax.bind(this, 'delete');
                     this.http = ajax.bind(this);
+                    
+                    this.websocket = websocket;
                     
                     return this;
                 }
@@ -429,23 +493,91 @@ window = window || {};
 
         head.appendChild(style);
     };
-
-    $(function () {
-        // Run all controllers when page is loaded
+    
+    Pooty.utility.createHiddenDiv = function () {
+        var body = document.body,
+            hidden = document.createElement('div');
+        
+        hidden.classList = ['pooty-hide', 'pooty__hidden-div'];
+        
+        body.insertBefore(hidden, body.firstChild);
+    };
+    
+    Pooty.utility.loadController = function (controllername) {
+        Pooty.controllers[controllername].call(new Pooty.resource.controllerScope(
+            // Automatically connect the model & state, if possible
+            Pooty.models[controllername] || Pooty.models.universal || {},
+            Pooty.state[controllername] || Pooty.state.universal || {}
+        ));
+    };
+    
+    Pooty.utility.loadAllControllers = function () {
         for (var controller in Pooty.controllers) {
             // Call the controller with a new controllerScope as the lexical scope
-            //  (pass in the determined model, which may be empty)
-            Pooty.controllers[controller].call(new Pooty.resource.controllerScope(
-                // Automatically connect the model & state, if possible
-                Pooty.models[controller] || Pooty.models.universal || {},
-                Pooty.state[controller] || Pooty.state.universal || {}
-            ));
+            Pooty.utility.loadController(controller);
         }
+    };
+    
+    Pooty.utility.saveAllTemplates = function () {
+        $('template[name]').each(function () {
+            Pooty.templates[$(this).attr('name')] = $(this).remove();
+        });
+    };
+    
+    Pooty.utility.loadTemplate = function (url, callback) {
+        Pooty.templateUrls.push(url);
+        var currentNode = document.createElement('div');
+        $('div.pooty__hidden-div')[0].appendChild(currentNode);
+        $(currentNode).load(url, function () {
+            $('div.pooty__hidden-div template[name]').each(function () {
+                Pooty.templates[$(this).attr('name')] = $(this).remove();
+            });
+        });
+    };
+    
+    Pooty.utility.loadAllTemplates = function (callback) {
+        var numberOfTemplates = Pooty.templateUrls.length;
+        Pooty.templateUrls.forEach(function (url) {
+            var currentNode = document.createElement('div');
+            $('div.pooty__hidden-div')[0].appendChild(currentNode);
+            $(currentNode).load(url, function () {
+                numberOfTemplates -= 1;
+                if (numberOfTemplates === 0) {
+                    callback();
+                }
+            });
+        });
+    };
+    
+    Pooty.utility.insertNamedTemplates = function () {
+        $('template[insert]').each(function () {
+            $(this).empty().prepend(Pooty.templates[$(this).attr('insert')];
+        });
+    };
+
+    // When the page loads
+    $(function () {
+        
+        // Create a hidden div to load external templates into
+        Pooty.utility.createHiddenDiv();
+        
+        // Load all external templates into the main HTML document
+        Pooty.utility.loadAllTemplates(function () {
+            // Detach and save all templates
+            Pooty.utility.saveAllTemplates();
+
+            // Run all controllers
+            Pooty.utility.loadAllControllers();
+            
+            // Insert templates into the page
+            Pooty.utility.insertNamedTemplates();
+        });
         
         // Define styles for Pooty elements
         Pooty.utility.css('poot, athlete { display: inline-block; }' + 
                           'poothtml, athletehtml, bucket, ' +
-                          'template { display: block; }');
+                          'template { display: block; }' +
+                          '.pooty-hide { display: none !important; }');
     });
 
 })(window, window.$, window.JSON);

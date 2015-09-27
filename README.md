@@ -191,6 +191,8 @@ A function to load any external HTML templates. Use it like this:
 
 `Pooty.template(string RelativeUrl1 [, string RelativeUrl2...string RelativeUrlN])`, where each RelativeUrl is the relative location of an HTML file containing one or more `<template>` definitions. This function accepts an unlimited number of arguments, and will attempt to parse each one for templates.
 
+All templates are processed as soon as the page has loaded. If you need to load a template after the page has loaded, use `Pooty.utility.loadTemplate(string RelativeUrl, function Callback);`. The callback will be called as soon as the template is available.
+
 #### `model()`:
 A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. Property names may not contain spaces; use a dash instead. CSS selectors may refer to one or many page elements, and Pooty will keep all of them up to date. You may nest these as necessary:
 
@@ -236,9 +238,11 @@ The `model()` function can be invoked one of two ways:
 #### `control()`:
 A home for your controller. The syntax is very similar to the `model` function:
 
-- `control(function ControllerFn)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `control()` function again, the first controller will be overwritten.
+- `control(function ControllerFn)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `control()` function again, strange behavior may occur.
 
-- `control(string ControllerName)(function ControllerFn)` will create a named controller. You can create as many named controllers as you want with different names. If you create a controller with the same name as an earlier one, the earlier one will be overwritten. If the controller has the same exact name as a model, *or* if you are using a universal model, the two will be connected automatically. Otherwise, you'll have to make the connection yourself (see the `loadModel()` function below).
+- `control(string ControllerName)(function ControllerFn)` will create a named controller. You can create as many named controllers as you want with different names. If you create a controller with the same name as an earlier one, the earlier one may behave sporadically. If the controller has the same exact name as a model, *or* if you are using a universal model, the two will be connected automatically. Otherwise, you'll have to make the connection yourself (see the `useModel()` function below).
+
+You probably won't ever need to load a controller after the page is loaded, but if you ever do, just declare it and then use `Pooty.utility.loadController(controllername);`. If you intend to have it attached to a model, be certain that the model has already been declared.
 
 #### `fn()`:
 A home for shared functions and services. This can only be invoked in one way:
@@ -251,7 +255,7 @@ You may not create a shared function without a name. There is no "universal" fun
 
 Inside the controller is where the magic happens. The `this` keyword inside of a controller refers to an object that has the following properties and methods:
 
-`useModel(string ModelName)`: Finds the model with the specified name and connects it to the current controller. Use this only once, and only if needed, at the very top of your controller.
+`useModel(string ModelName)`: Finds the model with the specified name and connects it to the current controller. Usually you should use this only once, and only if needed, at the very top of your controller.
 
 `loadModel(string ModelName)`: Returns any auxiliary model you may want to use. You may store it in a variable and access it in the same way as your regular model, like so:
 
@@ -262,11 +266,13 @@ otherModel('model-property').poot('A new value');
 
 `model()` (no parameters): Returns the name of the current model, or `'universal'` if a universal model is being used.
 
-`model(string ModelProperty)`: Searches the current model for the property with the specified name and returns a `model` object, which refers to an HTML tag *for displaying information*, usually a `<poot>` or `<span>` tag. This is rarely useful on its own, and generally begins a series of cascading functions. See below for available methods.
+`model(string ModelProperty)`: Finds the specified name on the model and returns a `model` object, which refers to an HTML tag *for displaying information*, usually a `<poot>` or `<span>` tag. This is rarely useful on its own, and generally begins a series of cascading functions. See below for available methods.
 
-`input(string ModelProperty)`: Searches the current model for the property with the specified name and returns an `input` object, which refers to an `<input>` tag. Like the `model` object, this is rarely useful on its own. See below for available methods.
+`input(string ModelProperty)`: Finds the specified name on the model and returns an `input` object, which refers to an `<input>` tag. Like the `model` object, this is rarely useful on its own. See below for available methods.
 
-`button(string ModelProperty)`: Searches the current model for the property with the specified name and returns a `button` object, which refers to a `<button>` tag (or any other element which may be clicked by the user). Again, this is not very useful on its own. See below for available methods.
+`button(string ModelProperty)`: Finds the specified name on the model and returns a `button` object, which refers to a `<button>` tag (or any other element which may be clicked by the user). Again, this is not very useful on its own. See below for available methods.
+
+`array(string ModelProperty)`: Finds the specified name on the model and returns an `array` object (this is not a descendant of the Javascript `Array` type). This object refers to an array of objects with similar structures, which are usually used with a `<bucket>` element to display information in a list. See below for available methods.
 
 `url(string Url)`: Returns a `url` object which can be used for REST methods or websockets. See below for available methods.
 
@@ -304,6 +310,21 @@ The `button` object refers to any clickable HTML element (most commonly `<button
 `click(function HandlerFn)`: A property which can be used to bind click events to a function which runs on every click. Inside the function, you may call `this.off()` to destroy the binding.
 
 `doubleclick(function HandlerFn)`: Identical to `click(function)`, except that it registers double clicks instead of single clicks.
+
+
+### The `array` object
+
+The `array` object refers to an array of objects with a similar structure, generally displayed as a list. It is obtained by calling `this.array(string)` with a property name from the model, and has the following methods:
+
+`push(object NewObject)`: Adds an object to the end of the array, updating the view as needed.
+
+`unshift(object NewObject)`: Adds an object to the beginning of the array.
+
+`pop()`: Removes and returns the last object in the array.
+
+`replace(number ArrayIndex, object ReplacementObject)`: Replaces the object at the specified index with the new object passed in.
+
+`splice(number ArrayIndex, number DeleteCount, object Insert1 [, object Insert2...object InsertN])`: Begins at the specified index, deletes the specified number of elements following it (or none, if the number is zero), and then inserts the rest of the arguments at that index. Similar to Javascript's native `Array.prototype.splice()` method.
 
 
 ### The `url` object
@@ -356,17 +377,21 @@ The `websocket` object refers to an open websocket connection, which can be used
 
 The following things are not yet implemented in Pooty:
 
-- **Capturing view templates**. Will need to find, save and hide template blocks on page load. Save them as properties of `Pooty.templates` by name.
+- ~~**Allow dynamic controller creation/loading**. You should be able to declare and load a controller late in the application.~~ DONE.
 
-- **Loading external view templates**. Ensure that the controllers don't run until all the templates have been gotten.
+- ~~**Capturing view templates**. Will need to find, save and hide template blocks on page load. Save them as properties of `Pooty.templates` by name.~~ DONE.
 
-- **Inserting view templates**. Only worry about the ones visible at page load; `bucket` templates can be handled on the fly.
+- ~~**Loading external view templates**. Ensure that the controllers don't run until all the templates have been gotten.~~ DONE.
 
-- **Bucket and friends**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Make sure `bucket` selection is handled well.
+- ~~**Inserting view templates**. Only worry about the ones visible at page load; `bucket` templates can be handled on the fly.~~ DONE.
 
-- **Mutate**. Both `input` and `url` ought to have a `mutate` method for incoming data.
+- **Array functions**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Add "push", "unshift", "pop", "replace", and "splice" functions, maybe as functions off of `(ControllerScope) this.array`.
 
-- **Null selectors**. ~~For state-only data which is not bound to the view, Pooty should not attempt to update or get the view.~~ DONE.
+- ~~**Mutate**. Both `input` and `url` ought to have a `mutate` method for incoming data.~~ DONE.
+
+- ~~**Null selectors**. For state-only data which is not bound to the view, Pooty should not attempt to update or get the view.~~ DONE.
+
+- **Hide and show**. Hide or show model values and have them disappear or reappear on the view.
 
 - **Unit tests**. Priorities are 1) simplicity, and 2) complete code coverage. All code should run without errors.
 
