@@ -194,7 +194,7 @@ A function to load any external HTML templates. Use it like this:
 All templates are processed as soon as the page has loaded. If you need to load a template after the page has loaded, use `Pooty.utility.loadTemplate(string RelativeUrl, function Callback);`. The callback will be called as soon as the template is available.
 
 #### `model()`:
-A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. Property names may not contain spaces; use a dash instead. CSS selectors may refer to one or many page elements, and Pooty will keep all of them up to date. You may nest these as necessary:
+A home for your data model. The base `key: value` pair is modeled after `property name: CSS selector`. Property names may contain spaces. CSS selectors may refer to one or many page elements, and Pooty will keep all of them up to date. You may nest these as necessary:
 
 ```javascript
 {
