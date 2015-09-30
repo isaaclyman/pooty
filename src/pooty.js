@@ -537,21 +537,25 @@ window = window || {};
     
     Pooty.utility.loadAllTemplates = function (callback) {
         var numberOfTemplates = Pooty.templateUrls.length;
-        Pooty.templateUrls.forEach(function (url) {
-            var currentNode = document.createElement('div');
-            $('div.pooty__hidden-div')[0].appendChild(currentNode);
-            $(currentNode).load(url, function () {
-                numberOfTemplates -= 1;
-                if (numberOfTemplates === 0) {
-                    callback();
-                }
+        if (numberOfTemplates > 0) {
+            Pooty.templateUrls.forEach(function (url) {
+                var currentNode = document.createElement('div');
+                $('div.pooty__hidden-div')[0].appendChild(currentNode);
+                $(currentNode).load(url, function () {
+                    numberOfTemplates -= 1;
+                    if (numberOfTemplates === 0) {
+                        callback();
+                    }
+                });
             });
-        });
+        } else {
+            callback();
+        }
     };
     
     Pooty.utility.insertNamedTemplates = function () {
         $('template[insert]').each(function () {
-            $(this).empty().prepend(Pooty.templates[$(this).attr('insert')];
+            $(this).empty().prepend(Pooty.templates[$(this).attr('insert')]);
         });
     };
 
