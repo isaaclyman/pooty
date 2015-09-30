@@ -128,6 +128,7 @@ window = window || {};
                 },
                 model: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.model()')) return;
+                    var modelObj = {};
                     
                     var poot = function () {
                         if (!arguments.length) {
@@ -136,17 +137,17 @@ window = window || {};
                         Pooty.utility.setState(scope.mainModel, scope.mainState, property, Array.prototype.join.call(arguments, ' '));
                     };
                     
-                    return {
-                        poot: poot,
-                        yield: poot
-                    }
+                    modelObj.poot = poot;
+                    modelObj.yield = poot;
+                    
+                    return modelObj;
                 },
                 fn: function (fnname) {
                     return Pooty.fns[fnname];
                 },
                 input: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.input()')) return;
-                    var inputObj = this;
+                    var inputObj = {};
                     var selector = Pooty.utility.getSelector(scope.mainModel, property);
                     
                     var poot = function () {
@@ -159,20 +160,24 @@ window = window || {};
                     
                     poot.model = function (targetProperty) {
                         if (!Pooty.utility.check(targetProperty, ['string'], 'this.input().poot.model()')) return;
-
+                        var modelObj = {};
+                        
                         var handler = function () {
                             scope.functions.model(targetProperty).poot(Pooty.utility.getInputValue(selector));
                         };
                         $(selector).on('keyup', null, handler);
+                        
+                        var off = function () {
+                            $(selector).off('keyup', null, handler);
+                        };
+                        
+                        modelObj.off = off;
 
-                        return {
-                            off: function () {
-                                $(selector).off('keyup', null, handler);
-                            }
-                        }
+                        return modelObj;
                     };
                     
                     var validate = function (validFn) {
+                        var validateObj = {};
                         var validated = false;
                         var handler = function () {
                             if (!!validFn($(selector).val())) {
@@ -189,19 +194,21 @@ window = window || {};
                         };
                         
                         var success = function (successFn) {
+                            var successObj = {};
                             validated ? successFn(Pooty.utility.getInputValue(selector)) : null;
-                            return {
-                                off: off
-                            }
+                            
+                            successObj.off = off;
+                            return successObj;
                         };
+                        
+                        validateObj.off = off;
+                        validateObj.success = success;
 
-                        return {
-                            off: off,
-                            success: success
-                        }
+                        return validateObj;
                     }
                     
                     var mutate = function (mutateFn) {                        
+                        var mutateObj = {};
                         var poot = function () {
                             return mutateFn(Pooty.utility.getInputValue(selector));
                         };
@@ -224,21 +231,22 @@ window = window || {};
                             };
                         };
                         
-                        return {
-                            poot: poot,
-                            yield: poot
-                        };
+                        mutateObj.poot = poot;
+                        mutateObj.yield = poot;
+                        
+                        return mutateObj;
                     };
                     
-                    return {
-                        poot: poot,
-                        yield: poot,
-                        validate: validate,
-                        mutate: mutate
-                    };
+                    inputObj.poot = poot;
+                    inputObj.yield = poot;
+                    inputObj.validate = validate;
+                    inputObj.mutate = mutate;
+                    
+                    return inputObj;
                 },
                 button: function (property) {
                     if (!Pooty.utility.check(property, ['string'], 'this.button()')) return;
+                    var buttonObj = {};
                     var selector = Pooty.utility.getSelector(scope.mainModel, property);
                     
                     var bindHandler = function (type, handler) {
@@ -252,28 +260,30 @@ window = window || {};
                         $(selector).on(type, null, handler);
                     };
                     
-                    return {
-                        click: bindHandler.bind(null, 'click'),
-                        doubleclick: bindHandler.bind(null, 'dblclick')
-                    };
+                    buttonObj.click = bindHandler.bind(null, 'click');
+                    buttonObj.doubleclick = bindHandler.bind(null, 'dblclick');
+                    
+                    return buttonObj;
                 },
                 url: function (url) {
                     if (!Pooty.utility.check(url, ['string'], 'this.url()')) return;
-                    var urlObj = {
+                    var urlObj = {};
+                    var ajaxObj = {
                         url: url
                     };
                     
                     var optionSet = function (name, value) {
                         if (!Pooty.utility.check(name, ['string'], 'urlObj.option()')) return;
                         if (!Pooty.utility.check(value, ['string'], 'urlObj.option()')) return;
-                        urlObj[name] = value;
+                        ajaxObj[name] = value;
                         return this;
                     };
                     
                     var ajax = function (type) {
                         if (!Pooty.utility.check(type, ['string'], 'urlObj.http()')) return;
-                        urlObj.type = type || urlObj.type;
-                        var response = $.ajax(urlObj);
+                        var ajaxResponseObj = {};
+                        ajaxObj.type = type || ajaxObj.type;
+                        var response = $.ajax(ajaxObj);
                         
                         var poot = function () {
                             return response;
@@ -287,6 +297,8 @@ window = window || {};
                         };
                         
                         var mutate = function (handlerFn) {
+                            if (!Pooty.utility.check(handlerFn, ['function'], 'httpResponse.mutate()')) return;
+                            var mutateObj = {};
                             var promise = response.done(function (response) {
                                 response = handlerFn(response);
                                 return response;
@@ -303,16 +315,17 @@ window = window || {};
                                 });
                             }
                             
-                            return {
-                                poot: poot
-                            };
+                            mutateObj.poot = poot;
+                            mutateObj.yield = poot;
+                            
+                            return mutateObj;
                         };
                         
-                        
-                        return {
-                            poot: poot,
-                            mutate: mutate
-                        };
+                        ajaxResponseObj.poot = poot;
+                        ajaxResponseObj.yield = poot;
+                        ajaxResponseObj.mutate = mutate;
+                                                
+                        return ajaxResponseObj;
                     };
                     
                     var websocket = function (protocol) {
@@ -320,6 +333,7 @@ window = window || {};
                         if (!window.WebSocket) 
                             return Pooty.error('WebSocket unavailable', 'This browser does not support WebSockets.',
                                                [url, protocol]);
+                        var wsObj = {};
                         var socket = new window.WebSocket(url, protocol);
                         
                         var sendqueue = [];
@@ -353,28 +367,28 @@ window = window || {};
                             }
                         };
                         
-                        return {
-                            send: send,
-                            receive: receive,
-                            close: socket.close
-                        };
+                        wsObj.send = send;
+                        wsObj.receive = receive;
+                        wsObj.close = socket.close;
+                        
+                        return wsObj;
                     };
                     
-                    this.headers = optionSet.bind(this, 'headers');
-                    this.data = optionSet.bind(this, 'data');
-                    this.timeout = optionSet.bind(this, 'timeout');
-                    this.option = optionSet.bind(this);
+                    urlObj.headers = optionSet.bind(this, 'headers');
+                    urlObj.data = optionSet.bind(this, 'data');
+                    urlObj.timeout = optionSet.bind(this, 'timeout');
+                    urlObj.option = optionSet.bind(this);
                     
-                    this.get = ajax.bind(this, 'get');
-                    this.post = ajax.bind(this, 'post');
-                    this.put = ajax.bind(this, 'put');
-                    this.patch = ajax.bind(this, 'patch');
-                    this.delete = ajax.bind(this, 'delete');
-                    this.http = ajax.bind(this);
+                    urlObj.get = ajax.bind(this, 'get');
+                    urlObj.post = ajax.bind(this, 'post');
+                    urlObj.put = ajax.bind(this, 'put');
+                    urlObj.patch = ajax.bind(this, 'patch');
+                    urlObj.delete = ajax.bind(this, 'delete');
+                    urlObj.http = ajax.bind(this);
                     
-                    this.websocket = websocket;
+                    urlObj.websocket = websocket;
                     
-                    return this;
+                    return urlObj;
                 }
             };
             

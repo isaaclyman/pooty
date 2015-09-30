@@ -272,7 +272,7 @@ otherModel('model-property').poot('A new value');
 
 `button(string ModelProperty)`: Finds the specified name on the model and returns a `button` object, which refers to a `<button>` tag (or any other element which may be clicked by the user). Again, this is not very useful on its own. See below for available methods.
 
-`array(string ModelProperty)`: Finds the specified name on the model and returns an `array` object (this is not a descendant of the Javascript `Array` type). This object refers to an array of objects with similar structures, which are usually used with a `<bucket>` element to display information in a list. See below for available methods.
+`bucket(string ModelProperty)`: Finds the specified name on the model and returns a `bucket` object. This object refers to an array of objects with similar structures, which are usually used with a `<bucket>` element to display information in a list. See below for available methods.
 
 `url(string Url)`: Returns a `url` object which can be used for REST methods or websockets. See below for available methods.
 
@@ -312,9 +312,9 @@ The `button` object refers to any clickable HTML element (most commonly `<button
 `doubleclick(function HandlerFn)`: Identical to `click(function)`, except that it registers double clicks instead of single clicks.
 
 
-### The `array` object
+### The `bucket` object
 
-The `array` object refers to an array of objects with a similar structure, generally displayed as a list. It is obtained by calling `this.array(string)` with a property name from the model, and has the following methods:
+The `bucket` object refers to an array of objects with a similar structure, generally displayed as a list. It is obtained by calling `this.bucket(string)` with a property name from the model, and has the following methods:
 
 `push(object NewObject)`: Adds an object to the end of the array, updating the view as needed.
 
@@ -385,7 +385,7 @@ The following things are not yet implemented in Pooty:
 
 - ~~**Inserting view templates**. Only worry about the ones visible at page load; `bucket` templates can be handled on the fly.~~ DONE.
 
-- **Array functions**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Add "push", "unshift", "pop", "replace", and "splice" functions, maybe as functions off of `(ControllerScope) this.array`.
+- **Array functions**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Add "push", "unshift", "pop", "replace", and "splice" functions, maybe as functions off of `(ControllerScope) this.bucket`.
 
 - ~~**Mutate**. Both `input` and `url` ought to have a `mutate` method for incoming data.~~ DONE.
 
