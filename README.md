@@ -262,7 +262,7 @@ Inside the controller is where the magic happens. The `this` keyword inside of a
 
 ```javascript
 var otherModel = this.useModel('otherModel');
-otherModel('model-property').poot('A new value');
+otherModel.model('model-property').poot('A new value');
 ```
 
 `model()` (no parameters): Returns the name of the current model, or `'universal'` if a universal model is being used.

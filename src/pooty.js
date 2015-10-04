@@ -138,7 +138,7 @@ window = window || {};
                 if (!newModel || !newState) {
                     return Pooty.error('No model found', 'Could not find a model with the name: ', name);
                 }
-                return Pooty.resource.controllerScope(newModel, newState).model;
+                return Pooty.resource.controllerScope(newModel, newState);
             },
             model: function (property) {
                 if (!Pooty.utility.check(property, ['string'], 'this.model()')) return;
