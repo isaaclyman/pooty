@@ -327,6 +327,8 @@ The `bucket` object refers to an array of objects with a similar structure, gene
 
 `splice(number ArrayIndex, number DeleteCount, object Insert1 [, object Insert2...object InsertN])`: Begins at the specified index, deletes the specified number of elements following it (or none, if the number is zero), and then inserts the rest of the arguments at that index. Similar to Javascript's native `Array.prototype.splice()` method.
 
+`index(number ArrayIndex)`: Returns the object at the specified index in the array. You can use this returned object just like you use the model; chain a `model()`, `input()`, `button()`, or `bucket()` function to it as needed. This becomes important when using nested arrays.
+
 
 ### The `url` object
 
