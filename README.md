@@ -211,12 +211,13 @@ A home for your data model. The base `key: value` pair is modeled after `propert
     },
   },
   'body': {
-    'favorite artists': ['bucket.favorite-artists', {
-      'name': 'poot.artist-name',
-      'born': 'poot.artist-birth',
-      'died': 'poot.artist-death',
-      'famous for': 'poot.famous-for'
-    }]
+    'favorite artists': {
+      'BUCKET': 'bucket.favorite-artists',
+        'name': 'poot.artist-name',
+        'born': 'poot.artist-birth',
+        'died': 'poot.artist-death',
+        'famous for': 'poot.famous-for'
+    }
   }
 }
 ```
@@ -225,7 +226,7 @@ Nested elements are accessed like this: `this.model('head.user.instruments.full 
 
 Google 'CSS Selectors' for a number of great tutorials on how to use these. They are plugged directly into jQuery or Zepto to find the element you want, so you can use any selectors your chosen library supports.
 
-For arrays of data, enter an array *with two elements*: a CSS selector for your `<bucket>` element, and an object which will represent the model for each element in the array. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<bucket>` HTML element on the page should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
+For arrays of data, your object should include an property (preferably the first property) that has `'BUCKET'` as the key and a CSS selector pointing to a `<bucket>` element as the value. In the example above, you can see that a list of favorite artists is going to be displayed on the page. A `<bucket>` HTML element on the page (with a class of `favorite-artists`) should reference a template which contains at least four elements: `<poot class="artist-name">`, `<poot class="artist-birth">`, `<poot class="artist-death">`, and `<poot class="famous-for">`. You can use nested arrays where necessary.
 
 Use the model, *not the controller*, to maintain state in your application. For any state information which should not be visible to the user, write `null` in place of a CSS selector. You will be able to change and access the value as normal but it will not attempt to update the view.
 

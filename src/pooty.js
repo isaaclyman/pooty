@@ -2,6 +2,11 @@
 window = window || {};
 
 (function (window, $, JSON) {
+    
+    /*
+        INITIALIZATION AND DEPENDENCIES
+    */
+    
     // Create Pooty as a global which executes the report() function
     //  (useful as we create the default functionality later)
     var Pooty = window.Pooty = window.Athlete = function (modelname) {
@@ -26,6 +31,10 @@ window = window || {};
         Pooty.error('Missing dependency', 'Pooty requires jQuery or Zepto. Please include one of these.');
         return null;
     }
+    
+    /*
+        TOP-LEVEL FUNCTIONS
+    */
     
     // Initialize basic properties
     // Models: A home for the user-created models, with name:selector pairs
@@ -97,305 +106,346 @@ window = window || {};
         });
     };
     
-    Pooty.resource = {
-        controllerScope: function (mainModel, mainState) {
-            var scope = this;
-            scope.mainModel = mainModel;
-            scope.mainState = mainState;
-            
-            scope.functions = {
-                // Change the model associated with this controller
-                useModel: function (name) {
-                    if (!Pooty.utility.check(name, ['string'], 'this.loadModel()')) return;
-                    var newModel = Pooty.models[name];
-                    var newState = Pooty.state[name];
-                    if (!newModel || !newState) {
-                        return Pooty.error('No model found', 'Could not find a model with the name: ', name);
+    /*
+        CONTROLLER SCOPE
+    */
+    
+    Pooty.resource = Pooty.resource || {}; 
+    
+    Pooty.resource.controllerScope = function (mainModel, mainState) {
+        var scope = this;
+        scope.mainModel = mainModel;
+        scope.mainState = mainState;
+
+        scope.functions = {
+            // Change the model associated with this controller
+            useModel: function (name) {
+                if (!Pooty.utility.check(name, ['string'], 'this.loadModel()')) return;
+                var newModel = Pooty.models[name];
+                var newState = Pooty.state[name];
+                if (!newModel || !newState) {
+                    return Pooty.error('No model found', 'Could not find a model with the name: ', name);
+                }
+                scope.mainModel = newModel;
+                scope.mainState = newState;
+                return;
+            },
+            // Use an auxiliary model
+            loadModel: function (name) {
+                if (!Pooty.utility.check(name, ['string'], 'this.useModel()')) return;
+                var newModel = Pooty.models[name];
+                var newState = Pooty.state[name];
+                if (!newModel || !newState) {
+                    return Pooty.error('No model found', 'Could not find a model with the name: ', name);
+                }
+                return Pooty.resource.controllerScope(newModel, newState).model;
+            },
+            model: function (property) {
+                if (!Pooty.utility.check(property, ['string'], 'this.model()')) return;
+                var modelObj = {};
+
+                var poot = function () {
+                    if (!arguments.length) {
+                        return Pooty.utility.getState(scope.mainModel, scope.mainState, selector);
                     }
-                    scope.mainModel = newModel;
-                    scope.mainState = newState;
-                    return;
-                },
-                // Use an auxiliary model
-                loadModel: function (name) {
-                    if (!Pooty.utility.check(name, ['string'], 'this.useModel()')) return;
-                    var newModel = Pooty.models[name];
-                    var newState = Pooty.state[name];
-                    if (!newModel || !newState) {
-                        return Pooty.error('No model found', 'Could not find a model with the name: ', name);
+                    Pooty.utility.setState(scope.mainModel, scope.mainState, property, Array.prototype.join.call(arguments, ' '));
+                };
+
+                modelObj.poot = poot;
+                modelObj.yield = poot;
+
+                return modelObj;
+            },
+            fn: function (fnname) {
+                return Pooty.fns[fnname];
+            },
+            input: function (property) {
+                if (!Pooty.utility.check(property, ['string'], 'this.input()')) return;
+                var inputObj = {};
+                var selector = Pooty.utility.getSelector(scope.mainModel, property);
+
+                var poot = function () {
+                    if (!arguments.length) {
+                        return Pooty.utility.getInputValue(selector);
                     }
-                    return Pooty.resource.controllerScope(newModel, newState).model;
-                },
-                model: function (property) {
-                    if (!Pooty.utility.check(property, ['string'], 'this.model()')) return;
+
+                    Pooty.utility.setInputValue(selector, Array.prototype.join.call(arguments, ' '));
+                };
+
+                poot.model = function (targetProperty) {
+                    if (!Pooty.utility.check(targetProperty, ['string'], 'this.input().poot.model()')) return;
                     var modelObj = {};
-                    
-                    var poot = function () {
-                        if (!arguments.length) {
-                            return Pooty.utility.getState(scope.mainModel, scope.mainState, selector);
-                        }
-                        Pooty.utility.setState(scope.mainModel, scope.mainState, property, Array.prototype.join.call(arguments, ' '));
+
+                    var handler = function () {
+                        scope.functions.model(targetProperty).poot(Pooty.utility.getInputValue(selector));
                     };
-                    
-                    modelObj.poot = poot;
-                    modelObj.yield = poot;
-                    
+                    $(selector).on('keyup', null, handler);
+
+                    var off = function () {
+                        $(selector).off('keyup', null, handler);
+                    };
+
+                    modelObj.off = off;
+
                     return modelObj;
-                },
-                fn: function (fnname) {
-                    return Pooty.fns[fnname];
-                },
-                input: function (property) {
-                    if (!Pooty.utility.check(property, ['string'], 'this.input()')) return;
-                    var inputObj = {};
-                    var selector = Pooty.utility.getSelector(scope.mainModel, property);
-                    
-                    var poot = function () {
-                        if (!arguments.length) {
-                            return Pooty.utility.getInputValue(selector);
+                };
+
+                var validate = function (validFn) {
+                    var validateObj = {};
+                    var validated = false;
+                    var handler = function () {
+                        if (!!validFn($(selector).val())) {
+                            validated = true;
+                        } else {
+                            validated = false;
                         }
-                        
-                        Pooty.utility.setInputValue(selector, Array.prototype.join.call(arguments, ' '));
                     };
-                    
-                    poot.model = function (targetProperty) {
-                        if (!Pooty.utility.check(targetProperty, ['string'], 'this.input().poot.model()')) return;
-                        var modelObj = {};
-                        
+
+                    $(selector).on('keyup', null, handler);
+
+                    var off = function () {
+                        $(selector).off('keyup', null, handler);
+                    };
+
+                    var success = function (successFn) {
+                        var successObj = {};
+                        validated ? successFn(Pooty.utility.getInputValue(selector)) : null;
+
+                        successObj.off = off;
+                        return successObj;
+                    };
+
+                    validateObj.off = off;
+                    validateObj.success = success;
+
+                    return validateObj;
+                }
+
+                var mutate = function (mutateFn) {                        
+                    var mutateObj = {};
+                    var poot = function () {
+                        return mutateFn(Pooty.utility.getInputValue(selector));
+                    };
+
+                    poot.model = function (property) {
+                        var off = {};
                         var handler = function () {
-                            scope.functions.model(targetProperty).poot(Pooty.utility.getInputValue(selector));
+                            scope.functions.model(property).poot(mutateFn.call(off,
+                                                                 Pooty.utility.getInputValue(selector)));
                         };
+
                         $(selector).on('keyup', null, handler);
-                        
-                        var off = function () {
+
+                        off.off = function () {
                             $(selector).off('keyup', null, handler);
                         };
-                        
-                        modelObj.off = off;
 
-                        return modelObj;
+                        return {
+                            off: off.off
+                        };
                     };
-                    
-                    var validate = function (validFn) {
-                        var validateObj = {};
-                        var validated = false;
-                        var handler = function () {
-                            if (!!validFn($(selector).val())) {
-                                validated = true;
-                            } else {
-                                validated = false;
-                            }
-                        };
 
-                        $(selector).on('keyup', null, handler);
+                    mutateObj.poot = poot;
+                    mutateObj.yield = poot;
 
-                        var off = function () {
-                            $(selector).off('keyup', null, handler);
-                        };
-                        
-                        var success = function (successFn) {
-                            var successObj = {};
-                            validated ? successFn(Pooty.utility.getInputValue(selector)) : null;
-                            
-                            successObj.off = off;
-                            return successObj;
-                        };
-                        
-                        validateObj.off = off;
-                        validateObj.success = success;
+                    return mutateObj;
+                };
 
-                        return validateObj;
-                    }
-                    
-                    var mutate = function (mutateFn) {                        
+                inputObj.poot = poot;
+                inputObj.yield = poot;
+                inputObj.validate = validate;
+                inputObj.mutate = mutate;
+
+                return inputObj;
+            },
+            button: function (property) {
+                if (!Pooty.utility.check(property, ['string'], 'this.button()')) return;
+                var buttonObj = {};
+                var selector = Pooty.utility.getSelector(scope.mainModel, property);
+
+                var bindHandler = function (type, handler) {
+                    if (!Pooty.utility.check(handler, ['function'], 'this.button.' + type + '()')) return;
+                    var off = {};
+                    handler = handler.bind(off);
+                    off.off = function () {
+                        $(selector).off(type, null, handler);
+                    };
+
+                    $(selector).on(type, null, handler);
+                };
+
+                buttonObj.click = bindHandler.bind(null, 'click');
+                buttonObj.doubleclick = bindHandler.bind(null, 'dblclick');
+
+                return buttonObj;
+            },
+            bucket: function (property) {
+                if (!Pooty.utility.check(property, ['string'], 'this.bucket()')) return;
+                var bucketObj = {};
+                var bucketSelectors = Pooty.utility.getModelObj(scope.mainModel, property);
+                
+                var push = function (newObj) {
+                    var 
+                };
+                
+                var unshift = function (newObj) {
+                
+                };
+                
+                var pop = function () {
+                
+                };
+                
+                var replace = function (index, newObj) {
+                
+                };
+                
+                var splice = function (index, deleteCount /*, newObj1..newObjN */) {
+                
+                };
+                
+                bucketObj.push = push;
+                bucketObj.unshift = unshift;
+                bucketObj.pop = pop;
+                bucketObj.replace = replace;
+                bucketObj.splice = splice;
+                
+                return bucketObj;
+            },
+            url: function (url) {
+                if (!Pooty.utility.check(url, ['string'], 'this.url()')) return;
+                var urlObj = {};
+                var ajaxObj = {
+                    url: url
+                };
+
+                var optionSet = function (name, value) {
+                    if (!Pooty.utility.check(name, ['string'], 'urlObj.option()')) return;
+                    if (!Pooty.utility.check(value, ['string'], 'urlObj.option()')) return;
+                    ajaxObj[name] = value;
+                    return this;
+                };
+
+                var ajax = function (type) {
+                    if (!Pooty.utility.check(type, ['string'], 'urlObj.http()')) return;
+                    var ajaxResponseObj = {};
+                    ajaxObj.type = type || ajaxObj.type;
+                    var response = $.ajax(ajaxObj);
+
+                    var poot = function () {
+                        return response;
+                    };
+
+                    poot.model = function (property) {
+                        if (!Pooty.utility.check(property, ['string'], 'httpResponse.poot.model()')) return;
+                        response.done(function (response) {
+                            scope.functions.model(property).poot(response);
+                        });
+                    };
+
+                    var mutate = function (handlerFn) {
+                        if (!Pooty.utility.check(handlerFn, ['function'], 'httpResponse.mutate()')) return;
                         var mutateObj = {};
+                        var promise = response.done(function (response) {
+                            response = handlerFn(response);
+                            return response;
+                        });
+
                         var poot = function () {
-                            return mutateFn(Pooty.utility.getInputValue(selector));
+                            return promise;
                         };
-                        
+
                         poot.model = function (property) {
-                            var off = {};
-                            var handler = function () {
-                                scope.functions.model(property).poot(mutateFn.call(off,
-                                                                     Pooty.utility.getInputValue(selector)));
-                            };
-                            
-                            $(selector).on('keyup', null, handler);
-                            
-                            off.off = function () {
-                                $(selector).off('keyup', null, handler);
-                            };
-                            
-                            return {
-                                off: off.off
-                            };
-                        };
-                        
+                            if (!Pooty.utility.check(property, ['string'], 'httpResponse.mutate().poot.model()')) return;
+                            response.done(function (response) {
+                                scope.functions.model(property).poot(handlerFn(response));
+                            });
+                        }
+
                         mutateObj.poot = poot;
                         mutateObj.yield = poot;
-                        
+
                         return mutateObj;
                     };
-                    
-                    inputObj.poot = poot;
-                    inputObj.yield = poot;
-                    inputObj.validate = validate;
-                    inputObj.mutate = mutate;
-                    
-                    return inputObj;
-                },
-                button: function (property) {
-                    if (!Pooty.utility.check(property, ['string'], 'this.button()')) return;
-                    var buttonObj = {};
-                    var selector = Pooty.utility.getSelector(scope.mainModel, property);
-                    
-                    var bindHandler = function (type, handler) {
-                        if (!Pooty.utility.check(handler, ['function'], 'this.button.' + type + '()')) return;
-                        var off = {};
-                        handler = handler.bind(off);
-                        off.off = function () {
-                            $(selector).off(type, null, handler);
-                        };
 
-                        $(selector).on(type, null, handler);
-                    };
-                    
-                    buttonObj.click = bindHandler.bind(null, 'click');
-                    buttonObj.doubleclick = bindHandler.bind(null, 'dblclick');
-                    
-                    return buttonObj;
-                },
-                url: function (url) {
-                    if (!Pooty.utility.check(url, ['string'], 'this.url()')) return;
-                    var urlObj = {};
-                    var ajaxObj = {
-                        url: url
-                    };
-                    
-                    var optionSet = function (name, value) {
-                        if (!Pooty.utility.check(name, ['string'], 'urlObj.option()')) return;
-                        if (!Pooty.utility.check(value, ['string'], 'urlObj.option()')) return;
-                        ajaxObj[name] = value;
-                        return this;
-                    };
-                    
-                    var ajax = function (type) {
-                        if (!Pooty.utility.check(type, ['string'], 'urlObj.http()')) return;
-                        var ajaxResponseObj = {};
-                        ajaxObj.type = type || ajaxObj.type;
-                        var response = $.ajax(ajaxObj);
-                        
-                        var poot = function () {
-                            return response;
-                        };
-                        
-                        poot.model = function (property) {
-                            if (!Pooty.utility.check(property, ['string'], 'httpResponse.poot.model()')) return;
-                            response.done(function (response) {
-                                scope.functions.model(property).poot(response);
-                            });
-                        };
-                        
-                        var mutate = function (handlerFn) {
-                            if (!Pooty.utility.check(handlerFn, ['function'], 'httpResponse.mutate()')) return;
-                            var mutateObj = {};
-                            var promise = response.done(function (response) {
-                                response = handlerFn(response);
-                                return response;
-                            });
-                            
-                            var poot = function () {
-                                return promise;
-                            };
-                            
-                            poot.model = function (property) {
-                                if (!Pooty.utility.check(property, ['string'], 'httpResponse.mutate().poot.model()')) return;
-                                response.done(function (response) {
-                                    scope.functions.model(property).poot(handlerFn(response));
-                                });
-                            }
-                            
-                            mutateObj.poot = poot;
-                            mutateObj.yield = poot;
-                            
-                            return mutateObj;
-                        };
-                        
-                        ajaxResponseObj.poot = poot;
-                        ajaxResponseObj.yield = poot;
-                        ajaxResponseObj.mutate = mutate;
-                                                
-                        return ajaxResponseObj;
-                    };
-                    
-                    var websocket = function (protocol) {
-                        if (!Pooty.utility.check(protocol, ['string', 'object'], 'urlObj.websocket()')) return;
-                        if (!window.WebSocket) 
-                            return Pooty.error('WebSocket unavailable', 'This browser does not support WebSockets.',
-                                               [url, protocol]);
-                        var wsObj = {};
-                        var socket = new window.WebSocket(url, protocol);
-                        
-                        var sendqueue = [];
+                    ajaxResponseObj.poot = poot;
+                    ajaxResponseObj.yield = poot;
+                    ajaxResponseObj.mutate = mutate;
 
-                        var send = function (data) {
-                            if (typeof data === 'object') {
-                                data = JSON.stringify(data);
-                            }
-                            if (socket.readyState === socket.CONNECTING) {
-                                sendqueue.push(data);
-                            } else if (socket.readyState === socket.OPEN) {
-                                socket.send(data);
-                            } else {
-                                Pooty.error('Connection failed', 'The websocket connection to ' + url + ' failed to connect.',
-                                            [protocol, data]);
-                            }
-                        };
-                        
-                        var receive = function (handlerFn) {
-                            socket.onmessage = function (message) {
-                                handlerFn(message.data);
-                            };
-                        };
-                        
-                        socket.onopen = function () {
-                            if (sendqueue.length > 0) {
-                                for (var msg in sendqueue) {
-                                    socket.send(sendqueue[msg]);
-                                }
-                                sendqueue = [];
-                            }
-                        };
-                        
-                        wsObj.send = send;
-                        wsObj.receive = receive;
-                        wsObj.close = socket.close;
-                        
-                        return wsObj;
+                    return ajaxResponseObj;
+                };
+
+                var websocket = function (protocol) {
+                    if (!Pooty.utility.check(protocol, ['string', 'object'], 'urlObj.websocket()')) return;
+                    if (!window.WebSocket) 
+                        return Pooty.error('WebSocket unavailable', 'This browser does not support WebSockets.',
+                                           [url, protocol]);
+                    var wsObj = {};
+                    var socket = new window.WebSocket(url, protocol);
+
+                    var sendqueue = [];
+
+                    var send = function (data) {
+                        if (typeof data === 'object') {
+                            data = JSON.stringify(data);
+                        }
+                        if (socket.readyState === socket.CONNECTING) {
+                            sendqueue.push(data);
+                        } else if (socket.readyState === socket.OPEN) {
+                            socket.send(data);
+                        } else {
+                            Pooty.error('Connection failed', 'The websocket connection to ' + url + ' failed to connect.',
+                                        [protocol, data]);
+                        }
                     };
-                    
-                    urlObj.headers = optionSet.bind(this, 'headers');
-                    urlObj.data = optionSet.bind(this, 'data');
-                    urlObj.timeout = optionSet.bind(this, 'timeout');
-                    urlObj.option = optionSet.bind(this);
-                    
-                    urlObj.get = ajax.bind(this, 'get');
-                    urlObj.post = ajax.bind(this, 'post');
-                    urlObj.put = ajax.bind(this, 'put');
-                    urlObj.patch = ajax.bind(this, 'patch');
-                    urlObj.delete = ajax.bind(this, 'delete');
-                    urlObj.http = ajax.bind(this);
-                    
-                    urlObj.websocket = websocket;
-                    
-                    return urlObj;
-                }
-            };
-            
-            return scope.functions;
-        }
+
+                    var receive = function (handlerFn) {
+                        socket.onmessage = function (message) {
+                            handlerFn(message.data);
+                        };
+                    };
+
+                    socket.onopen = function () {
+                        if (sendqueue.length > 0) {
+                            for (var msg in sendqueue) {
+                                socket.send(sendqueue[msg]);
+                            }
+                            sendqueue = [];
+                        }
+                    };
+
+                    wsObj.send = send;
+                    wsObj.receive = receive;
+                    wsObj.close = socket.close;
+
+                    return wsObj;
+                };
+
+                urlObj.headers = optionSet.bind(this, 'headers');
+                urlObj.data = optionSet.bind(this, 'data');
+                urlObj.timeout = optionSet.bind(this, 'timeout');
+                urlObj.option = optionSet.bind(this);
+
+                urlObj.get = ajax.bind(this, 'get');
+                urlObj.post = ajax.bind(this, 'post');
+                urlObj.put = ajax.bind(this, 'put');
+                urlObj.patch = ajax.bind(this, 'patch');
+                urlObj.delete = ajax.bind(this, 'delete');
+                urlObj.http = ajax.bind(this);
+
+                urlObj.websocket = websocket;
+
+                return urlObj;
+            }
+        };
+
+        return scope.functions;
     };
 
+    /*
+        UTILITIES
+    */
+    
     Pooty.utility = Pooty.utility || {};
     
     // Resets every non-object value in a model to null
@@ -440,7 +490,23 @@ window = window || {};
     
     Pooty.utility.getSelector = function (model, path) {
         path = Pooty.utility.makePathArray(path);
-        return Pooty.utility.traverse(model, path);
+        var selector = Pooty.utility.traverse(model, path);
+        if (typeof selector !== 'string') {
+            return Pooty.error('Invalid selector',
+                        'The model property referred to is not a string. Make sure it is formatted correctly.',
+                        [path, selector]);
+        }
+    };
+    
+    Pooty.utility.getBucket = function (model, path) {
+        path = Pooty.utility.makePathArray(path);
+        var bucket = Pooty.utility.traverse(model, path);
+        if (!Array.isArray(bucket)) {
+            return Pooty.error('Invalid bucket',
+                        'The model property referred to is not a bucket. Make sure it is formatted correctly.',
+                        [path, bucket]);
+        }
+        return bucket;
     };
 
     Pooty.utility.getViewValue = function (selector) {
