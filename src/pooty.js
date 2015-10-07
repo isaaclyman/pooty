@@ -146,9 +146,27 @@ window = window || {};
 
                 var poot = function () {
                     if (!arguments.length) {
-                        return Pooty.utility.getState(scope.mainModel, scope.mainState, selector);
+                        return Pooty.utility.getState(scope.mainModel, scope.mainState, property);
                     }
-                    Pooty.utility.setState(scope.mainModel, scope.mainState, property, Array.prototype.join.call(arguments, ' '));
+                    if (arguments.length === 1 && typeof arguments[0] === 'object') {
+                        var dataObj = arguments[0];
+                        var modelObj = Pooty.utility.getModel(scope.mainModel, property);
+                        
+                        if (!Pooty.utility.sameClass(modelObj, dataObj)) {
+                            return Pooty.error('Incorrect object structure',
+                                        'Cannot apply this object to the model; the structure and keys do not match.',
+                                        [modelObj, dataObj]);
+                        }
+                        
+                        for (var key in dataObj) {
+                            scope.functions.model(property + '.' + key).poot(dataObj[key]);
+                        }
+                        return;
+                    }
+                    Pooty.utility.setState(scope.mainModel,
+                                           scope.mainState,
+                                           property,
+                                           Array.prototype.join.call(arguments, ' '));
                 };
 
                 modelObj.poot = poot;
@@ -469,6 +487,24 @@ window = window || {};
         }
     }
     
+    Pooty.utility.sameClass = function (obj1, obj2) {
+        return deepCompare(obj1, obj2) && deepCompare(obj2, obj1);
+    };
+    
+    function deepCompare(obj1, obj2) {
+        for (var key in obj1) {
+            if (!obj1.hasOwnProperty(key)) continue;
+            
+            if (obj2[key] === undefined)
+                return false;
+            
+            if (typeof obj1[key] === 'object') {
+                return deepCompare(obj1[key], obj2[key]);
+            }
+        }
+        return true;
+    }
+    
     Pooty.utility.makePathArray = function(path) {
         return path.split('.');
     };
@@ -486,6 +522,11 @@ window = window || {};
     Pooty.utility.mutate = function (object, path, newValue) {
         var last = path.pop();
         Pooty.utility.traverse(object, path)[last] = newValue;
+    };
+    
+    Pooty.utility.getModel = function (model, path) {
+        path = Pooty.utility.makePathArray(path);
+        return Pooty.utility.traverse(model, path);
     };
     
     Pooty.utility.getSelector = function (model, path) {
@@ -527,16 +568,7 @@ window = window || {};
     
     Pooty.utility.getState = function (model, state, path) {
         path = Pooty.utility.makePathArray(path);
-        var selector = Pooty.utility.traverse(model, path);
-        
-        if (typeof selector === 'string') {
-            var viewValue = Pooty.utility.getViewValue(selector);
-            Pooty.utility.mutate(state, path, viewValue);
-            return viewValue;
-        } else {
-            return Pooty.utility.traverse(state, path);
-        }
-        
+        return Pooty.utility.traverse(state, path);
     };
     
     Pooty.utility.setState = function (model, state, path, newValue) {

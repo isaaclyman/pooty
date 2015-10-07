@@ -282,12 +282,33 @@ otherModel.model('model-property').poot('A new value');
 
 ### The `model` object
 
-The `model` object refers to HTML elements which are informative (i.e. interactivity is irrelevant for the current operation) or to state variables. It is obtained by calling `this.model(string)` with a property name from the model, and has the following methods:
+The `model` object refers to a model propertie which may contain other model properties, an HTML element selector, or simple state information (user input and events are not handled by the `model` object). It is obtained by calling `this.model(string)` with a property name from the model, and has the following methods:
 
-`poot()` (no parameters): Returns the current value of this property.
+`poot()` (no parameters): Returns the current value of this property. If it contains nested properties, an object will be returned that contains the current state of all child properties.
 
-`poot(string [, string2,...stringN])`: Replaces the property's value with the arguments passed in. All the arguments will be joined into a single string, each separated by a single space.
+`poot(string [, string2,...stringN] || object DataObj)`: For element selectors or state information, replaces the property's value with the arguments passed in. All the arguments will be joined into a single string, each separated by a single space. For nested properties, this function accepts an object *with the same properties and structure* as the property on the model and operates on each key-value pair recursively. For example:
 
+```javascript
+Pooty.model({
+    example: {
+        name: 'span.name',
+        age: null,
+        occupation: null
+    }
+});
+
+Pooty.control(function () {
+    var exampleObj = {
+        name: 'John',
+        age: '25',
+        occupation: 'Housekeeper'        
+    };
+    
+    this.model('example').poot(exampleObj);
+});
+```
+
+This will work because `exampleObj` and the model's `example` object have the same structure and keys. If they did not, an error would be thrown. In this case, the DOM node selected by `span.name` will be updated along with the `age` and `occupation` state nodes.
 
 ### The `input` object
 
@@ -376,6 +397,8 @@ The `websocket` object refers to an open websocket connection, which can be used
 
 `Pooty.utility.check(var, [string], string)`: Accepts a variable, an array of `typeof` strings, and a function signature as a string. Asserts that the variable type matches at least one of the `typeof` strings, and throws an error if it doesn't. Uses the function signature as part of the error message. Use this to implement type safety in your app.
 
+`Pooty.utility.sameClass(object Obj1, object Obj2)`: Compares two objects to see if they have *exactly the same* keys and structure. Does not compare values. Returns `true` if they have the same keys and structure, and `false` if they do not.
+
 # TO DO
 
 The following things are not yet implemented in Pooty:
@@ -388,7 +411,9 @@ The following things are not yet implemented in Pooty:
 
 - ~~**Inserting view templates**. Only worry about the ones visible at page load; `bucket` templates can be handled on the fly.~~ DONE.
 
-- **Array functions**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Add "push", "unshift", "pop", "replace", and "splice" functions, maybe as functions off of `(ControllerScope) this.bucket`.
+- ~~**Pooting objects**. The user can use `model.poot(object)` and have the object recursively applied to the model, as long as it matches the structure of the model.~~ DONE.
+
+- **Array functions**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Add "push", "unshift", "pop", "replace", and "splice" functions, maybe as functions off of `(ControllerScope) this.bucket`. Figure out the most efficient way to use `index()` without having to re-create everything. Figure out how to select specific indexes of a bucket (`nth-child`?)
 
 - ~~**Mutate**. Both `input` and `url` ought to have a `mutate` method for incoming data.~~ DONE.
 
