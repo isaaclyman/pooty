@@ -113,7 +113,7 @@
                 </div>
                 
                 <div class="left half-width body code">
-                    Pooty.control(function () {<br>
+                    Pooty.controller(function () {<br>
                     <br>
                     &emsp;// Let's do a GET request & display the response.<br>
                     &emsp;this.url('/API').get().poot.model('message');<br>
@@ -142,7 +142,7 @@
                         &emsp;}<br>
                     });<br>
                     <br>
-                    Pooty.control(function () {<br>
+                    Pooty.controller(function () {<br>
                         &emsp;var control = this;<br><br>
                         &emsp;this.input('example.input')<br>
                         &emsp;&emsp;.poot.model('example.response');<br>
@@ -176,7 +176,7 @@
                             }
                         });
                         
-                        Pooty.control(function () {
+                        Pooty.controller(function () {
                             var control = this;
                             
                             this.input('example.input').poot.model('example.response');

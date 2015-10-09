@@ -82,7 +82,7 @@ Pooty.model('Welcome Message')({
 
 ```javascript
 // Welcome Message controller
-Pooty.control('Welcome Message')(function () {
+Pooty.controller('Welcome Message')(function () {
   // You can put a message on the page this way, with a simple string
   var message = 'Hellooooooo Tina!';
   this.model('welcome message').poot(message);
@@ -236,12 +236,12 @@ The `model()` function can be invoked one of two ways:
 
 - `model(string ModelName)(object Model)` will create a named model. You can create as many named models as you want, as long as they have different names. Attempting to create a model of the same name twice will overwrite the first one, so be careful. Creating a model with the name "universal" will overwrite a universal model.
 
-#### `control()`:
+#### `controller()`:
 A home for your controller. The syntax is very similar to the `model` function:
 
-- `control(function ControllerFn)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `control()` function again, strange behavior may occur.
+- `controller(function ControllerFn)` will assign a function as the controller for the entire application, which is fine for simple apps. If you invoke the `controller()` function again, strange behavior may occur.
 
-- `control(string ControllerName)(function ControllerFn)` will create a named controller. You can create as many named controllers as you want with different names. If you create a controller with the same name as an earlier one, the earlier one may behave sporadically. If the controller has the same exact name as a model, *or* if you are using a universal model, the two will be connected automatically. Otherwise, you'll have to make the connection yourself (see the `useModel()` function below).
+- `controller(string ControllerName)(function ControllerFn)` will create a named controller. You can create as many named controllers as you want with different names. If you create a controller with the same name as an earlier one, the earlier one may behave sporadically. If the controller has the same exact name as a model, *or* if you are using a universal model, the two will be connected automatically. Otherwise, you'll have to make the connection yourself (see the `useModel()` function below).
 
 You probably won't ever need to load a controller after the page is loaded, but if you ever do, just declare it and then use `Pooty.utility.loadController(controllername);`. If you intend to have it attached to a model, be certain that the model has already been declared.
 
@@ -297,7 +297,7 @@ Pooty.model({
     }
 });
 
-Pooty.control(function () {
+Pooty.controller(function () {
     var exampleObj = {
         name: 'John',
         age: '25',
@@ -337,6 +337,8 @@ The `button` object refers to any clickable HTML element (most commonly `<button
 ### The `bucket` object
 
 The `bucket` object refers to an array of objects with a similar structure, generally displayed as a list. It is obtained by calling `this.bucket(string)` with a property name from the model, and has the following methods:
+
+`poot(array ObjectArray)`: Replaces the whole array with the array passed in.
 
 `push(object NewObject)`: Adds an object to the end of the array, updating the view as needed.
 
@@ -413,7 +415,7 @@ The following things are not yet implemented in Pooty:
 
 - ~~**Pooting objects**. The user can use `model.poot(object)` and have the object recursively applied to the model, as long as it matches the structure of the model.~~ DONE.
 
-- **Array functions**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Add "push", "unshift", "pop", "replace", and "splice" functions, maybe as functions off of `(ControllerScope) this.bucket`. Figure out the most efficient way to use `index()` without having to re-create everything. Figure out how to select specific indexes of a bucket (`nth-child`?)
+- **Array functions**. Teach Pooty how to add and remove templated nodes inside of a `bucket` when the state changes. Add "poot", "push", "unshift", "pop", "replace", and "splice" functions, maybe as functions off of `(ControllerScope) this.bucket`. Figure out the most efficient way to use `index()` without having to re-create everything. Figure out how to select specific indexes of a bucket (`nth-child`?)
 
 - ~~**Mutate**. Both `input` and `url` ought to have a `mutate` method for incoming data.~~ DONE.
 

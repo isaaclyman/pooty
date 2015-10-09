@@ -9,9 +9,7 @@ window = window || {};
     
     // Create Pooty as a global which executes the report() function
     //  (useful as we create the default functionality later)
-    var Pooty = window.Pooty = window.Athlete = function (modelname) {
-        return Pooty.state[modelname];
-    };
+    var Pooty = window.Pooty = window.Athlete = {};
     
     // Error reporter
     //@param title: A brief title for the error
@@ -74,7 +72,7 @@ window = window || {};
     // returns a function that takes the controller function as its parameter.
     //  OR
     //@param controlname: A universal controller function
-    Pooty.control = function (controllername) {
+    Pooty.controller = function (controllername) {
         if (!Pooty.utility.check(controllername, ['string', 'function'], 'Pooty.control()')) return;
         if (typeof controllername === 'string') {
             return function (controllerFn) {
@@ -300,26 +298,40 @@ window = window || {};
             bucket: function (property) {
                 if (!Pooty.utility.check(property, ['string'], 'this.bucket()')) return;
                 var bucketObj = {};
-                var bucketSelectors = Pooty.utility.getModelObj(scope.mainModel, property);
+                var bucketModel = Pooty.utility.getModel(scope.mainModel, property);
+                var bucketState = Pooty.utility.getState(scope.mainState, property);
+                
+                var poot = function (newArray) {
+                    Pooty.utility.clearBucket(bucketModel, bucketState);
+                    for (var index in newArray) {
+                        Pooty.utility.addToBucket(bucketModel, bucketState, newArray[index]);
+                    }
+                };
                 
                 var push = function (newObj) {
-                    var 
+                    Pooty.utility.addToBucket(bucketModel, bucketState, newObj, -1);
                 };
                 
                 var unshift = function (newObj) {
-                
+                    Pooty.utility.addToBucket(bucketModel, bucketState, newObj, 0);
                 };
                 
                 var pop = function () {
-                
+                    return Pooty.utility.removeFromBucket(bucketModel, bucketState, -1);
                 };
                 
                 var replace = function (index, newObj) {
-                
+                    Pooty.utility.removeFromBucket(bucketModel, bucketState, index);
+                    Pooty.utility.addToBucket(bucketModel, bucketState, newObj, index);
                 };
                 
                 var splice = function (index, deleteCount /*, newObj1..newObjN */) {
-                
+                    for (var counter = 1; counter <= deleteCount; counter++) {
+                        Pooty.utility.removeFromBucket(bucketModel, bucketState, index);
+                    }
+                    if (arguments.length > 2) {
+                        var objectsToAdd = Array.prototype.slice.call(null);
+                    }
                 };
                 
                 bucketObj.push = push;
